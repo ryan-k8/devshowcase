@@ -7,4 +7,6 @@ router.get("/login", authController.getLogin);
 
 router.get("/oauth-callback", authController.handleOauth2Flow);
 
+router.post("/logout", authController.postLogOut);
+
 module.exports = router;
