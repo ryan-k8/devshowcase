@@ -1,0 +1,65 @@
+<nav class="deep-purple lighten-2" style="padding: 0px 10px; position: fixed">
+  <div class="nav-wrapper">
+    <a href="#" class="brand-logo"
+      ><i class="material-icons left">logo_dev</i>showCase</a
+    >
+
+    <a href="#" class="sidenav-trigger" data-target="mobile-nav">
+      <i class="material-icons">menu</i>
+    </a>
+
+    <ul class="right hide-on-med-and-down">
+      <li class="<%= path=='/' ? 'active': '' %>"><a href="/">Home</a></li>
+      <% if (isAuthenticated) { %>
+      <li class="<%= path=='/projects' ? 'active': '' %>">
+        <a href="#">Projects</a>
+      </li>
+      <li class="<%= path=='/profile' ? 'active': '' %>">
+        <a href="#">Profile</a>
+      </li>
+      <li>
+        <form action="/auth/logout" method="POST">
+          <button class="btn deep-purple lighten-1" type="submit" name="action">
+            Logout
+          </button>
+        </form>
+      </li>
+      <% } else { %>
+      <li class="<%= path=='/login' ? 'active': '' %>">
+        <a href="#">Login</a>
+      </li>
+      <% } %>
+    </ul>
+  </div>
+</nav>
+
+<ul class="sidenav" id="mobile-nav">
+  <li class="<%= path=='/' ? 'active': '' %>"><a href="/">Home</a></li>
+  <% if (isAuthenticated) { %>
+  <li class="<%= path=='/projects' ? 'active': '' %>">
+    <a href="#">Projects</a>
+  </li>
+  <li class="<%= path=='/profile' ? 'active': '' %>">
+    <a href="#">Profile</a>
+  </li>
+  <li>
+    <form action="/auth/logout" method="POST">
+      <button
+        class="btn deed-purple lighten-1"
+        style="margin-left: 1.5rem !important; background: #7e57c2 !important"
+        ="submit"
+        name="action"
+      >
+        Logout
+      </button>
+    </form>
+  </li>
+  <% } else { %>
+  <li class="<%= path=='/login' ? 'active': '' %>"><a href="#">Login</a></li>
+  <% } %>
+</ul>
+<script>
+  $(document).ready(function () {
+    $(".sidenav").sidenav();
+  });
+</script>

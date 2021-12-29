@@ -16,6 +16,7 @@ const store = new MongoDbStore({
   collection: "session",
 });
 
+const indexRoute = require("./routes/index");
 const authRoutes = require("./routes/auth");
 const errorController = require("./controllers/error");
 
@@ -34,6 +35,7 @@ app.use(
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+app.use(indexRoute);
 app.use("/auth", authRoutes);
 app.use("/", errorController.get404);
 
