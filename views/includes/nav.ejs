@@ -9,24 +9,41 @@
     </a>
 
     <ul class="right hide-on-med-and-down">
-      <li class="<%= path=='/' ? 'active': '' %>"><a href="/">Home</a></li>
+      <li class="<%= path=='/' ? 'active': '' %>">
+        <a href="/" class="tooltipped" data-tooltip="home"
+          ><i class="material-icons">home</i></a
+        >
+      </li>
       <% if (isAuthenticated) { %>
       <li class="<%= path=='/projects' ? 'active': '' %>">
-        <a href="#">Projects</a>
+        <a href="#" class="tooltipped" data-tooltip="projects"
+          ><i class="material-icons">work</i></a
+        >
       </li>
       <li class="<%= path=='/profile' ? 'active': '' %>">
-        <a href="#">Profile</a>
+        <a href="#" class="tooltipped" data-tooltip="profile"
+          ><i class="material-icons">account_circle</i></a
+        >
       </li>
       <li>
-        <form action="/auth/logout" method="POST">
-          <button class="btn deep-purple lighten-1" type="submit" name="action">
-            Logout
-          </button>
+        <form id="my_form" action="/auth/logout" method="POST">
+          <a
+            class="btn deep-purple lighten-1 tooltipped"
+            href="javascript:{}"
+            onclick="document.getElementById('my_form').submit();"
+            type="submit"
+            name="action"
+            data-tooltip="logout"
+          >
+            <i class="material-icons">logout</i>
+          </a>
         </form>
       </li>
       <% } else { %>
       <li class="<%= path=='/login' ? 'active': '' %>">
-        <a href="#">Login</a>
+        <a class="tooltipped" data-tooltip="login"
+          ><i class="material-icons">login</i></a
+        >
       </li>
       <% } %>
     </ul>
@@ -34,32 +51,45 @@
 </nav>
 
 <ul class="sidenav" id="mobile-nav">
-  <li class="<%= path=='/' ? 'active': '' %>"><a href="/">Home</a></li>
+  <li class="<%= path=='/' ? 'active': '' %>">
+    <a href="/"><i class="material-icons">home</i>home</a>
+  </li>
   <% if (isAuthenticated) { %>
   <li class="<%= path=='/projects' ? 'active': '' %>">
-    <a href="#">Projects</a>
+    <a href="#"><i class="material-icons">work</i>projects</a>
   </li>
   <li class="<%= path=='/profile' ? 'active': '' %>">
-    <a href="#">Profile</a>
+    <a href="#"><i class="material-icons">account_circle</i>profile</a>
   </li>
   <li>
-    <form action="/auth/logout" method="POST">
-      <button
-        class="btn deed-purple lighten-1"
-        style="margin-left: 1.5rem !important; background: #7e57c2 !important"
-        ="submit"
+    <form id="my_form" action="/auth/logout" method="POST">
+      <a
+        class="btn deep-purple lighten-1"
+        href="javascript:{}"
+        onclick="document.getElementById('my_form').submit();"
+        type="submit"
         name="action"
+        style="
+          margin-left: 2rem !important;
+          text-transform: lowercase !important;
+        "
       >
-        Logout
-      </button>
+        <i class="material-icons left">logout</i> logout
+      </a>
     </form>
   </li>
   <% } else { %>
-  <li class="<%= path=='/login' ? 'active': '' %>"><a href="#">Login</a></li>
+  <li class="<%= path=='/login' ? 'active': '' %>">
+    <a><i class="material-icons">login</i>login</a>
+  </li>
   <% } %>
 </ul>
 <script>
   $(document).ready(function () {
     $(".sidenav").sidenav();
+  });
+
+  $(document).ready(function () {
+    $(".tooltipped").tooltip();
   });
 </script>
