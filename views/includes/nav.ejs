@@ -41,7 +41,10 @@
       </li>
       <% } else { %>
       <li class="<%= path=='/login' ? 'active': '' %>">
-        <a class="tooltipped" data-tooltip="login"
+        <a
+          data-target="oauth-login-modal"
+          class="tooltipped modal-trigger"
+          data-tooltip="login"
           ><i class="material-icons">login</i></a
         >
       </li>
@@ -80,10 +83,36 @@
   </li>
   <% } else { %>
   <li class="<%= path=='/login' ? 'active': '' %>">
-    <a><i class="material-icons">login</i>login</a>
+    <a href="#" data-target="oauth-login-modal" class="modal-trigger"
+      ><i class="material-icons">login</i>login</a
+    >
   </li>
   <% } %>
 </ul>
+
+<!-- modal -->
+<div id="oauth-login-modal" class="modal">
+  <div class="modal-content">
+    <h4 class="center" style="font-family: 'Roboto'">
+      Info about Github Oauth2 Login
+    </h4>
+    <p style="font-family: 'Roboto'">
+      you will be prompted to sign in github due to the oauth2 login flow. this
+      application only requires read access to your account.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a class="modal-close waves-effect btn deep-purple lighten-1 rounded"
+      >Disagree</a
+    >
+    <a
+      href="/auth/login"
+      class="modal-close waves-effect btn deep-purple lighten-1"
+      >Agree</a
+    >
+  </div>
+</div>
+
 <script>
   $(document).ready(function () {
     $(".sidenav").sidenav();
@@ -91,5 +120,9 @@
 
   $(document).ready(function () {
     $(".tooltipped").tooltip();
+  });
+
+  $(document).ready(function () {
+    $(".modal").modal();
   });
 </script>
