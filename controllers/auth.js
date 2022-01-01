@@ -5,7 +5,12 @@ const axios = require("axios");
 const { redirect } = require("express/lib/response");
 
 async function loginFlowHelper(userData) {
-  const { name, avatar_url: avatar, email: emailData } = userData;
+  const {
+    name,
+    avatar_url: avatar,
+    email: emailData,
+    login: userName,
+  } = userData;
 
   const primaryEmail = emailData.find((email) => email.primary == true);
   const email = primaryEmail.email;
@@ -17,6 +22,7 @@ async function loginFlowHelper(userData) {
       await User.create({
         email: email,
         name: name,
+        userName: userName,
         avatar: avatar,
       });
     }
@@ -81,7 +87,9 @@ exports.handleOauth2Flow = async (req, res, next) => {
     req.session.isLoggedIn = true;
     req.session.user = user;
 
-    res.redirect("/");
+    req.session.save(() => {
+      res.redirect("/");
+    });
   } catch (err) {
     const error = new Error(
       "error in login (failure in retrieving access token)"
