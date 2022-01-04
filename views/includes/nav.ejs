@@ -1,68 +1,126 @@
-<nav class="deep-purple lighten-2" style="padding: 0px 10px; position: fixed">
-  <div class="nav-wrapper">
-    <a href="#" class="brand-logo"
-      ><i class="material-icons left">logo_dev</i>showCase</a
-    >
-
-    <a href="#" class="sidenav-trigger" data-target="mobile-nav">
-      <i class="material-icons">menu</i>
-    </a>
-
-    <ul class="right hide-on-med-and-down">
-      <li class="<%= path=='/' ? 'active': '' %>">
-        <a href="/" class="tooltipped" data-tooltip="home"
-          ><i class="material-icons">home</i></a
-        >
-      </li>
-      <% if (isAuthenticated) { %>
-      <li class="<%= path=='/projects' ? 'active': '' %>">
-        <a href="#" class="tooltipped" data-tooltip="projects"
-          ><i class="material-icons">work</i></a
-        >
-      </li>
-      <li class="<%= path=='/profile' ? 'active': '' %>">
-        <a href="#" class="tooltipped" data-tooltip="profile"
-          ><i class="material-icons">account_circle</i></a
-        >
-      </li>
-      <li>
-        <form id="my_form" action="/auth/logout" method="POST">
-          <a
-            class="btn deep-purple lighten-1 tooltipped"
-            href="javascript:{}"
-            onclick="document.getElementById('my_form').submit();"
-            type="submit"
-            name="action"
-            data-tooltip="logout"
-          >
-            <i class="material-icons">logout</i>
-          </a>
+<!--search-modal-->
+<div id="search-modal" class="modal">
+  <div class="modal-content modal-content__search">
+    <nav class="white">
+      <div class="nav-wrapper">
+        <form>
+          <div class="input-field">
+            <input id="search" type="search" required />
+            <label class="label-icon" for="search"
+              ><i class="material-icons icon-dark">search</i></label
+            >
+            <i class="material-icons">close</i>
+          </div>
         </form>
-      </li>
-      <% } else { %>
-      <li class="<%= path=='/login' ? 'active': '' %>">
-        <a
-          data-target="oauth-login-modal"
-          class="tooltipped modal-trigger"
-          data-tooltip="login"
-          ><i class="material-icons">login</i></a
-        >
-      </li>
-      <% } %>
-    </ul>
+      </div>
+    </nav>
   </div>
-</nav>
+</div>
+
+<!-- login-modal -->
+<div id="oauth-login-modal" class="modal">
+  <div class="modal-content">
+    <h4 class="center" style="font-family: 'Roboto'">
+      Info about Github Oauth2 Login
+    </h4>
+    <p style="font-family: 'Roboto'">
+      you will be prompted to sign in github due to the oauth2 login flow. this
+      application only requires read access to your account.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a class="modal-close waves-effect btn deep-purple lighten-1 rounded"
+      >Disagree</a
+    >
+    <a
+      href="/auth/login"
+      class="modal-close waves-effect btn deep-purple lighten-1"
+      >Agree</a
+    >
+  </div>
+</div>
+
+<div class="navbar-fixed z-depth-1">
+  <nav class="deep-purple lighten-2" style="padding: 0px 10px; position: fixed">
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo"
+        ><i class="material-icons left">logo_dev</i>showCase</a
+      >
+      <a href="#" class="sidenav-trigger" data-target="mobile-nav">
+        <i class="material-icons">menu</i>
+      </a>
+
+      <ul class="right hide-on-med-and-down">
+        <li class="<%= path=='/' ? 'active': '' %>">
+          <a href="/" class="tooltipped" data-tooltip="home"
+            ><i class="material-icons">home</i></a
+          >
+        </li>
+        <li class="<%= path=='/search' ? 'active': '' %>">
+          <a
+            href="/"
+            class="tooltipped modal-trigger"
+            data-tooltip="search"
+            data-target="search-modal"
+            ><i class="material-icons">search</i></a
+          >
+        </li>
+        <% if (isAuthenticated) { %>
+        <li class="<%= path=='/projects' ? 'active': '' %>">
+          <a href="#" class="tooltipped" data-tooltip="projects"
+            ><i class="material-icons">work</i></a
+          >
+        </li>
+        <li class="<%= path=='/profile' ? 'active': '' %>">
+          <a href="/profile" class="tooltipped" data-tooltip="profile"
+            ><i class="material-icons">account_circle</i></a
+          >
+        </li>
+        <li>
+          <form id="my_form" action="/auth/logout" method="POST">
+            <a
+              class="btn deep-purple lighten-1 tooltipped"
+              href="javascript:{}"
+              onclick="document.getElementById('my_form').submit();"
+              type="submit"
+              name="action"
+              data-tooltip="logout"
+            >
+              <i class="material-icons">logout</i>
+            </a>
+          </form>
+        </li>
+        <% } else { %>
+        <li class="<%= path=='/login' ? 'active': '' %>">
+          <a
+            data-target="oauth-login-modal"
+            class="tooltipped modal-trigger"
+            data-tooltip="login"
+            ><i class="material-icons">login</i></a
+          >
+        </li>
+        <% } %>
+      </ul>
+    </div>
+  </nav>
+</div>
 
 <ul class="sidenav" id="mobile-nav">
   <li class="<%= path=='/' ? 'active': '' %>">
     <a href="/"><i class="material-icons">home</i>home</a>
+  </li>
+  <!-- class="tooltipped modal-trigger" data-tooltip="search" data-target="search-modal" -->
+  <li class="<%= path=='/search' ? 'active': '' %>">
+    <a href="#search" class="modal-trigger" data-target="search-modal"
+      ><i class="material-icons">search</i>search</a
+    >
   </li>
   <% if (isAuthenticated) { %>
   <li class="<%= path=='/projects' ? 'active': '' %>">
     <a href="#"><i class="material-icons">work</i>projects</a>
   </li>
   <li class="<%= path=='/profile' ? 'active': '' %>">
-    <a href="#"><i class="material-icons">account_circle</i>profile</a>
+    <a href="/profile"><i class="material-icons">account_circle</i>profile</a>
   </li>
   <li>
     <form id="my_form" action="/auth/logout" method="POST">
@@ -89,40 +147,27 @@
   </li>
   <% } %>
 </ul>
-
-<!-- modal -->
-<div id="oauth-login-modal" class="modal">
-  <div class="modal-content">
-    <h4 class="center" style="font-family: 'Roboto'">
-      Info about Github Oauth2 Login
-    </h4>
-    <p style="font-family: 'Roboto'">
-      you will be prompted to sign in github due to the oauth2 login flow. this
-      application only requires read access to your account.
-    </p>
-  </div>
-  <div class="modal-footer">
-    <a class="modal-close waves-effect btn deep-purple lighten-1 rounded"
-      >Disagree</a
-    >
-    <a
-      href="/auth/login"
-      class="modal-close waves-effect btn deep-purple lighten-1"
-      >Agree</a
-    >
-  </div>
-</div>
-
 <script>
   $(document).ready(function () {
     $(".sidenav").sidenav();
-  });
-
-  $(document).ready(function () {
     $(".tooltipped").tooltip();
-  });
-
-  $(document).ready(function () {
     $(".modal").modal();
+
+    $(".carousel").carousel({
+      dist: 0,
+      padding: 0,
+      fullWidth: true,
+      indicators: true,
+    });
+
+    autoplay();
+    function autoplay() {
+      $(".carousel").carousel("next");
+      setTimeout(autoplay, 4500);
+    }
+
+    $(document).ready(function () {
+      $("textarea#about_me_textArea").characterCounter();
+    });
   });
 </script>

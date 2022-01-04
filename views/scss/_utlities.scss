@@ -1,0 +1,82 @@
+* {
+  box-sizing: border-box !important;
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto";
+}
+// margin and padding utilities
+.m {
+  &-1 {
+    margin: 1rem;
+  }
+  &-2 {
+    margin: 1.5rem;
+  }
+
+  &-3 {
+    margin: 2rem;
+  }
+
+  &-4 {
+    margin: 2.5rem;
+  }
+}
+.my {
+  &-1 {
+    margin: 1rem 0;
+  }
+  &-2 {
+    margin: 1.5rem 0;
+  }
+
+  &-3 {
+    margin: 2rem 0;
+  }
+
+  &-4 {
+    margin: 2rem 0;
+  }
+}
+.p {
+  &-1 {
+    padding: 1rem;
+  }
+  &-2 {
+    padding: 1.5rem;
+  }
+
+  &-3 {
+    padding: 2rem;
+  }
+
+  &-4 {
+    padding: 2.5rem;
+  }
+}
+.py {
+  &-1 {
+    padding: 1rem 0;
+  }
+  &-2 {
+    padding: 1.5rem 0;
+  }
+
+  &-3 {
+    padding: 2rem 0;
+  }
+
+  &-4 {
+    padding: 2.5rem 0;
+  }
+}
+
+.poppins-text {
+  font-family: "Poppins";
+}
+
+#toast-container {
+  min-width: 10%;
+  top: 50%;
+  right: 50%;
+  transform: translateX(50%) translateY(50%);
+}

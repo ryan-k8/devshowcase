@@ -1,0 +1,146 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&display=swap");
+@import "./utlities";
+
+.modal-content__search {
+  padding: 0 !important;
+}
+.icon-dark {
+  color: #212121 !important;
+}
+
+.modal-content__search {
+  padding: 0 !important;
+}
+
+.d-icon {
+  color: #212121;
+}
+
+.user-profile-page {
+  &-left {
+    transition: all 0.25s ease-out;
+
+    .user-profile-info {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      width: 100%;
+
+      .img-holder {
+        width: 80%;
+        > img {
+          height: 95%;
+          width: 90%;
+          margin: 0 auto;
+          transition: all 0.25s ease;
+
+          &:hover {
+            transform: translateY(-2.5px);
+          }
+        }
+      }
+
+      .text-info {
+        width: 100%;
+        text-align: left !important;
+        margin: 0.5rem 0 !important;
+
+        .real__name {
+          font-size: 2rem;
+          font-style: italic;
+          margin: 0 0.25rem;
+        }
+        .login__name {
+          font-size: 0.85rem;
+          color: rgb(177, 177, 177);
+          transform: translateY(-0.2rem);
+        }
+        .__bio {
+          width: 100%;
+          padding: 0.4rem;
+          margin-top: 0.3rem;
+          border-radius: 5px;
+          background: rgb(248, 248, 252);
+          border: 1px solid rgb(192, 192, 192);
+
+          p {
+            font-size: 1rem;
+            color: rgb(110, 110, 110);
+          }
+        }
+      }
+
+      .actions {
+        > div {
+          display: flex;
+          justify-content: space-around;
+          width: 100%;
+
+          a {
+            display: block !important;
+          }
+        }
+      }
+    }
+  }
+
+  &-right {
+    .user-detailed-info {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+
+      .user-about-me-text {
+        padding: 0.25rem;
+        text-align: center;
+        line-break: auto;
+      }
+
+      .text-header {
+        text-align: center;
+        font-size: 1.2rem;
+        font-family: "Poppins";
+      }
+
+      .user-tech-stack-div {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 0.5rem;
+        .tech-stack-img {
+          display: inline-block;
+          width: 3.2rem;
+        }
+      }
+
+      .user-recent-projects {
+        .row {
+          .project {
+            transition: all 0.25s ease-in-out;
+
+            .card-title {
+              font-size: 1.25rem;
+              font-family: "Roboto";
+            }
+
+            &:hover {
+              transform: translate3d(0px, -2px, -2px);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#profile-edit-section {
+  .form-submit-div {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@import "./media";

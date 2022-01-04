@@ -18,9 +18,11 @@ const store = new MongoDbStore({
 
 const indexRoute = require("./routes/index");
 const authRoutes = require("./routes/auth");
+const profileRoutes = require("./routes/profile");
 const errorController = require("./controllers/error");
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
@@ -36,6 +38,7 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(indexRoute);
+app.use(profileRoutes);
 app.use("/auth", authRoutes);
 app.use("/", errorController.get404);
 
