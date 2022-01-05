@@ -43,8 +43,13 @@
 
       .text-info {
         width: 100%;
-        text-align: left !important;
+
         margin: 0.5rem 0 !important;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
 
         .real__name {
           font-size: 2rem;
@@ -96,11 +101,13 @@
         padding: 0.25rem;
         text-align: center;
         line-break: auto;
+        font-size: 1.1rem;
+        font-family: "Poppins";
       }
 
       .text-header {
         text-align: center;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-family: "Poppins";
       }
 
@@ -110,6 +117,7 @@
         flex-wrap: wrap;
         align-items: center;
         padding: 0.5rem;
+        gap: 0.5rem;
         .tech-stack-img {
           display: inline-block;
           width: 3.2rem;

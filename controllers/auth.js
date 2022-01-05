@@ -10,10 +10,13 @@ async function loginFlowHelper(userData) {
     avatar_url: avatar,
     email: emailData,
     login: userName,
+    bio,
   } = userData;
 
   const primaryEmail = emailData.find((email) => email.primary == true);
   const email = primaryEmail.email;
+
+  let newUser = false;
 
   try {
     const emailAlreadyExists = await User.findOne({ email: email });
@@ -23,14 +26,22 @@ async function loginFlowHelper(userData) {
         email: email,
         name: name,
         userName: userName,
+        bio: typeof bio == "object" ? " " : bio,
         avatar: avatar,
+        profileData: {
+          exists: false,
+        },
       });
+      newUser = true;
     }
   } catch (err) {
     console.log(err);
   }
 
-  return email;
+  return {
+    newUser: newUser,
+    email: email,
+  };
 }
 
 exports.getLogin = (req, res, next) => {
@@ -81,20 +92,30 @@ exports.handleOauth2Flow = async (req, res, next) => {
       opts
     );
 
-    const email = await loginFlowHelper({ ...userData, email: emailData });
+    const { newUser, email } = await loginFlowHelper({
+      ...userData,
+      email: emailData,
+    });
 
     const user = await User.findOne({ email: email });
     req.session.isLoggedIn = true;
     req.session.user = user;
 
-    req.session.save(() => {
-      res.redirect("/");
+    req.session.save((err) => {
+      if (err) {
+        throw new Error();
+      }
+      if (newUser) {
+        res.redirect("/edit-profile");
+      } else {
+        res.redirect(`/profile/${user._id.toString()}`);
+      }
     });
   } catch (err) {
     const error = new Error(
-      "error in login (failure in retrieving access token)"
+      "error in login (failure in retrieving access token or creating session)"
     );
-    error.statusCode = 401;
+    error.statusCode = 500;
     next(error);
   }
 };

@@ -1,0 +1,141 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+<%- include('../includes/nav.ejs') %>
+
+<section id="profile-edit-section" class="m-2 p-1">
+<div class="container p-1 z-depth-1">
+        
+   <div class="row">
+    <form class="col s12" id='edit-profile-form'>
+      <div class="row">
+        <div class="input-field col s6">
+          <input name='real-name' value='<%= userProfile.name %>' id="real-name" type="text" class="validate">
+          <label for="real-name">Name</label>
+        </div>
+        <div class="input-field col s6">
+          <input name='user-name' value='<%= userProfile.userName %>' id="user-name" type="text" class="validate">
+          <label for="user-name">UserName</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12">
+          <input name='email' disabled value="<%= userProfile.email %>" id="disabled" type="email">
+          <label for="disabled">Email (not editable)</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12">
+            <i class="material-icons prefix">mode_edit</i>
+            <textarea name='about-me-text' id="about_me_textArea" class="materialize-textarea" data-length='250'>
+              <% if (userProfile.profileData.exists) { %><%= userProfile.profileData.about.trim() %><% } %>
+            </textarea>
+            <label for="about_me_textArea">About Me</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12">
+            <p class="text-header grey-text text-darken-2 poppins-text">Tech Stack</p>
+            <div name='tech-stack-chips' id='tech-stack-chips' class="chips chips-initial chips-autocomplete"></div>
+        </div>
+      </div>
+      <div class="form-submit-div">
+        <button id='form-submit' class="btn deep-purple lighten-1 waves-effect waves-light" type="submit">Update
+            <i class="material-icons right">update</i>
+          </button>
+      </div>
+            
+    </form>
+  </div>
+ </div>
+</section>
+
+<script>
+  document.querySelector('textarea').value=document.querySelector('textarea').value.trim();
+
+  userTech = "<%= userProfile.profileData.technologies %>".trim() == "" ? [] : "<%= userProfile.profileData.technologies %>".split(",").map((name) => { return {tag:name}});
+
+  $('.chips-autocomplete').chips({
+    data:userTech,
+    autocompleteOptions: {
+    data: {
+      'android':null,
+      'angularjs':null,
+      'cpp':null,
+      'css':null,
+      'docker':null,
+      'express':null,
+      'firebase':null,
+      'git':null,
+      'go':null,
+      'graphql':null,
+      'heroku':null,
+      'html':null,
+      'java':null,
+      'javascript':null,
+      'jest':null,
+      'linux':null,
+      'mongodb':null,
+      'mysql':null,
+      'nginx':null,
+      'nodejs':null,
+      'postgresql':null,
+      'python':null,
+      'react':null,
+      'redis':null,
+      'redux':null,
+      'sass':null,
+      'spring':null,
+      'tailwindcss':null,
+      'tensorflow':null,
+      'typescript':null,
+      'vuejs':null,
+    },
+    limit: 12,
+    minLength: 1
+    }
+});
+document.getElementById('edit-profile-form').addEventListener('submit',async (e) => {
+    e.preventDefault();
+    const realName = document.querySelector('#real-name').value.trim();
+    const userName = document.querySelector('#user-name').value.trim();
+    const aboutMeText = document.querySelector('#about_me_textArea').value.trim();
+    const techStackData = document.querySelector('.chips-autocomplete').M_Chips.chipsData;
+
+    const body = {
+        realName: realName,
+        userName:userName,
+        aboutMe:aboutMeText,
+        techStack:JSON.stringify(techStackData),
+    }
+    try {
+
+
+        if (realName =='' || userName =='' || aboutMeText=='' || techStackData.length < 1 ) {
+        throw new Error('please enter values for all the fields :/');
+        }
+        const response = await fetch('http://localhost:3000/edit-profile',{
+            method:'POST',
+            body:JSON.stringify(body),
+            headers: {
+                'Content-Type':'application/json',
+            }
+        });
+        if (response.status==500 || response.status==403) {
+            const serverError = await response.json();
+            throw new Error(`server error :${serverError.message}`);
+        }
+        
+        if (response.redirected && response.url) {
+            window.location.href=response.url;
+        }
+
+    } catch (err) {
+        M.toast({html:`<p class='poppins-text'>${err.message}</p>`});
+    }
+
+    });
+
+</script>
+<%-include ('../includes/end.ejs') %>

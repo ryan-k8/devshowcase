@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const userProfileSchema = mongoose.Schema({
+  exists: {
+    type: Boolean,
+    required: true,
+  },
+
   about: {
     type: String,
   },
@@ -32,6 +37,11 @@ const userSchema = mongoose.Schema({
   },
 
   userName: {
+    type: String,
+    required: true,
+  },
+
+  bio: {
     type: String,
     required: true,
   },

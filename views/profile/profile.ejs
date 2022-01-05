@@ -1,0 +1,94 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+<%- include('../includes/nav.ejs') %>
+<section id='profile-section' class='my-2 p-1' style="height: 900px;">
+    <div class="container ">
+        <div class="row" class='z-depth-1'>
+            <div class="col s12 m4 l4 xl3 user-profile-page-left z-depth-1">
+                <div class="user-profile-info p-1">
+                    <div class="img-holder">
+                        <img src="<%= userProfile.avatar %>" alt="" class="circle user-github-img z-depth-1">
+                    </div>
+                    <div class="text-info">
+                        <p class='real__name poppins-text'><%= userProfile.name %></p>
+                        <p  class="login__name "><%= userProfile.userName.toLowerCase() %>  <i class="d-icon devicon-github-original"></i></p>
+                        <div class="__bio poppins-text">
+                            <p><% if (userProfile.bio.trim() !="") { %>
+                                <%= userProfile.bio %>
+                              <% } else {  %>
+                                  N/A
+                              <% } %>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <div>
+                            <% if(isAuthenticated) { %>
+                                <div class='p-1'>
+                                    <a href="/edit-profile" class="btn left deep-purple lighten-2 tooltipped" data-tooltip="edit profile"><i class="material-icons">edit</i></a>
+                                </div>
+
+                            <% } %>
+                            
+                            <div class="p-1">
+                                <a href="/projects/<%= userProfile._id.toString() %>" class="btn right deep-purple lighten-2 tooltipped" data-tooltip="views projects"><i class="material-icons">visibility</i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m8 l8 xl9 user-profile-page-right z-depth-1">
+                <% if (userProfile.profileData.exists)  { %>
+                    <div class="user-detailed-info p-1">
+                        <h5 class='text-header align-center'>About Me
+                             <div class="divider"></div>
+                        </h5>
+                        <div class="user-about-me-text">
+                           <%= userProfile.profileData.about %>
+                        </div>
+                        <h5 class='text-header align-center'>Tech Stack
+                            <div class="divider"></div>
+                       </h5>
+                       <div class="user-tech-stack-div">
+                           <% userProfile.profileData.technologies.forEach(technology => { %>
+                            <img
+                            class="tech-stack-img tooltipped"
+                            data-tooltip="<%= technology %>"
+                            src="/assets/techstack/<%= technology %>.svg"
+                            alt="<%= technology %>"
+                          />                                          
+                           <% }); %>
+                       </div>
+                       <h5 class='text-header align-center'>Recent Projects<div class="divider"></div>
+                       </h5>
+                       <div class="user-recent-projects">
+                           <div class="row">
+                               <% if (userProfile.profileData.projects.length >= 1) { %> 
+                                <!-- <div class="col project s12 m6 l6 xl4">
+                                    <div class="card">
+                                        <div class="card-image waves-effect waves-block waves-light">
+                                          <img class="activator" src="/toka.png">
+                                        </div>
+                                        <div class="card-content">
+                                          <span class="card-title activator grey-text text-darken-4">Toka<i class="material-icons right">more_vert</i></span>
+                                          <p><a href="#">View</a></p>
+                                        </div>
+                                        <div class="card-reveal">
+                                          <span class="card-title grey-text text-darken-4">Toka<i class="material-icons right">close</i></span>
+                                          <p>
+                                            🌸 vanilla js app for anime based on state pattern and mvc design. CI/CD with Netlify. up for hacktoberfest2021</p>
+                                        </div>
+                                      </div>   
+                                   </div>
+                                 -->
+                                <% } %> 
+                           </div>
+                       </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+<%-include ('../includes/end.ejs') %>

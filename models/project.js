@@ -13,6 +13,10 @@ const projectSchema = mongoose.Schema({
   },
 
   technologies: [String],
+
+  image: {
+    type: String,
+  },
 });
 
 const Project = mongoose.define("project", projectSchema);
