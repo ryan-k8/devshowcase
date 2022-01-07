@@ -1,5 +1,4 @@
 <%- include('../includes/head.ejs') %>
-<link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
 <%- include('../includes/nav.ejs') %>
@@ -11,10 +10,12 @@
     <form class="col s12" id='edit-profile-form'>
       <div class="row">
         <div class="input-field col s6">
+          <i class="material-icons prefix">account_circle</i>
           <input name='real-name' value='<%= userProfile.name %>' id="real-name" type="text" class="validate">
           <label for="real-name">Name</label>
         </div>
         <div class="input-field col s6">
+          <i class="material-icons prefix">account_circle</i>
           <input name='user-name' value='<%= userProfile.userName %>' id="user-name" type="text" class="validate">
           <label for="user-name">UserName</label>
         </div>
@@ -45,7 +46,6 @@
             <i class="material-icons right">update</i>
           </button>
       </div>
-            
     </form>
   </div>
  </div>

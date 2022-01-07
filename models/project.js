@@ -1,9 +1,26 @@
 const mongoose = require("mongoose");
 
 const projectSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+
   description: {
     type: String,
     required: true,
+  },
+
+  links: {
+    demo: {
+      type: String,
+      required: true,
+    },
+
+    sourceCode: {
+      type: String,
+      required: true,
+    },
   },
 
   user: {
@@ -14,10 +31,8 @@ const projectSchema = mongoose.Schema({
 
   technologies: [String],
 
-  image: {
-    type: String,
-  },
+  images: [{ url: String }],
 });
 
-const Project = mongoose.define("project", projectSchema);
+const Project = mongoose.model("project", projectSchema);
 module.exports = Project;

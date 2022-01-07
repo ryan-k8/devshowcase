@@ -1,0 +1,189 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+<%- include('../includes/nav.ejs') %>
+<section id="main-section" class="p-1 my-1">
+    <div class="container p-1 z-depth-2">
+        <div class="row">
+            <div class="col s12 my-1 p-1" style="text-align: center;"></div>
+            <form class="col s12" id='project-form'>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">badge</i>
+                    <input name='project-name' value='' id="project-name" type="text" class="validate">
+                    <label for="project-name">Project Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">mode_edit</i>
+                        <textarea name='project-description' id="project-description-text" class="materialize-textarea" data-length='420'>
+                        </textarea>
+                        <label for="project-description-text">Description</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s6">
+                        <i class="material-icons prefix">cloud</i>
+                        <input name='demo-link' value='' id="demo-link" type="text" class="validate">
+                        <label for="demo-link">Demo Url</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <i class="material-icons prefix">source</i>
+                        <input name='sc-link' value='' id="sc-link" type="text" class="validate">
+                        <label for="sc-link">Source Url</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="file-field input-field col s12">
+                      <div class="btn deep-purple lighten-1 waves-effect tooltipped" data-tooltip="project images">
+                        <span><i class="material-icons">image</i></span>
+                        <input type="file" id="project-images-filepicker" multiple accept=".jpg,.png,.jpeg">
+                      </div>
+                      <div class="file-path-wrapper">
+                        <input class="file-path"type="text" disabled placeholder="Max 2 IMGs(jpeg/jpg/png)( max 2.5MB each)">
+                      </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="input-field col s12">
+                        <p class="text-header grey-text text-darken-2 poppins-text">Tech Stack</p>
+                        <div name='tech-stack-chips' id='tech-stack-chips' class="chips chips-initial chips-autocomplete"></div>
+                    </div>
+                </div>
+                <div class="form-submit-div" style="display: flex;justify-content: center;">
+                    <button id='form-submit' class="btn deep-purple lighten-1 waves-effect waves-light" type="submit">Add
+                        <i class="material-icons right">add_circle</i>
+                    </button>
+                </div>
+                        
+                </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.querySelector('textarea').value=document.querySelector('textarea').value.trim();
+    
+    userTech = [];
+    
+    $('.chips-autocomplete').chips({
+        data:userTech,
+        autocompleteOptions: {
+        data: {
+        'android':null,
+        'angularjs':null,
+        'cpp':null,
+        'css':null,
+        'docker':null,
+        'express':null,
+        'firebase':null,
+        'git':null,
+        'go':null,
+        'graphql':null,
+        'heroku':null,
+        'html':null,
+        'java':null,
+        'javascript':null,
+        'jest':null,
+        'linux':null,
+        'mongodb':null,
+        'mysql':null,
+        'nginx':null,
+        'nodejs':null,
+        'postgresql':null,
+        'python':null,
+        'react':null,
+        'redis':null,
+        'redux':null,
+        'sass':null,
+        'spring':null,
+        'tailwindcss':null,
+        'tensorflow':null,
+        'typescript':null,
+        'vuejs':null,
+        },
+        limit: 12,
+        minLength: 1
+        }
+    });
+    document.getElementById('project-form').addEventListener('submit',async (e) => {
+        e.preventDefault();
+        const projectName = document.querySelector('#project-name').value.trim();
+        const demoUrl = document.querySelector('#demo-link').value.trim() == "" ? "N/A" : document.querySelector('#demo-link').value.trim() ;
+        const sourceCodeUrl = document.querySelector('#sc-link').value.trim() == "" ? "N/A": document.querySelector('#sc-link').value.trim() ;
+        const projectDescription = document.querySelector('#project-description-text').value.trim();
+        const projectTechStackData = document.querySelector('.chips-autocomplete').M_Chips.chipsData;
+
+        const projectImages= document.querySelector('#project-images-filepicker'); 
+        
+        function formSubmissionDataHelper(data) {
+            if (data.projectName =='' || data.projectDescription=='' || data.projectTechStack.length < 1 || data.projectImages.files.length < 1) {
+                throw new Error('name/description/techstack/images cannot be empty');
+            }
+            const formData = new FormData();
+
+            formData.append('name',data.projectName);
+            formData.append('demoUrl',data.demoUrl);
+            formData.append('sourceCodeUrl',data.sourceCodeUrl);
+            formData.append('description',data.description);
+            formData.append('techStack',JSON.stringify(data.projectTechStack));
+
+            const imagesMetaData= []; 
+            for(let i=0;(i<data.projectImages.files.length) && (i!=2);i++) {
+                const file = data.projectImages.files[i];
+                if (((file.size)/1024)/1024 > 2.5) {
+                    throw new Error('file size more than 2.5MB not allowed');
+                }
+
+                formData.append("image",data.projectImages.files[i]);
+                imagesMetaData.push({
+                    size:((file.size)/1024)/1024,
+                    mimeType:file.type,
+                });
+                
+            }
+
+            return {formData:formData,imagesMetaData:JSON.stringify(imagesMetaData)};
+        }
+    
+        const input = {
+            projectName:projectName,
+            demoUrl:demoUrl,
+            sourceCodeUrl:sourceCodeUrl, 
+            description:projectDescription,
+            projectImages:projectImages,
+            projectTechStack:projectTechStackData,
+        }
+
+        try {
+            const {formData,imagesMetaData} = formSubmissionDataHelper(input);
+            
+            const response = await fetch('http://localhost:3000/projects/add-project',{
+                    method:'POST',
+                    body:formData,
+                    headers: {
+                        'X-images-metadata':imagesMetaData,
+                    }
+                });
+            
+            if (response.status==500 || response.status==409) {
+                const serverError = await response.json();
+                throw new Error(`server error :${serverError.message}`);
+            }
+
+            if (response.redirected && response.url) {
+                window.location.href=response.url;
+            }
+    
+        } catch (err) {
+            M.toast({html:`<p class='poppins-text'>${err.message}</p>`})
+            console.log(err);
+        }
+
+    });
+    
+    </script>
+<%-include ('../includes/end.ejs') %>
