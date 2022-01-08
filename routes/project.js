@@ -25,8 +25,13 @@ router.get("/project/:projectId", (req, res) => {
   res.json({ message: "OK" });
 });
 
-router.get("/projects/edit-project", (req, res) => {
+router.get("/projects/edit-project/:projectId", (req, res) => {
   res.json({ message: "OK" });
 });
+
+router.post(
+  "/projects/edit-project/:projectId",
+  projectController.postEditProject
+);
 
 module.exports = router;

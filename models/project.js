@@ -31,7 +31,7 @@ const projectSchema = mongoose.Schema({
 
   technologies: [String],
 
-  images: [{ url: String }],
+  images: [{ url: String, cloudinaryId: String }],
 });
 
 const Project = mongoose.model("project", projectSchema);
