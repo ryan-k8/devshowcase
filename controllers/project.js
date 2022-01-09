@@ -1,3 +1,4 @@
+const upload = require("../middlewares/upload");
 const Project = require("../models/project");
 const { cloudinary } = require("../util/cloudinary");
 
@@ -45,9 +46,31 @@ exports.postAddProject = async (req, res, next) => {
   }
 };
 
+exports.getEditProject = async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+    const { user: sessionUser } = req.session;
+
+    const project = await Project.findById(projectId);
+
+    if (project.user.toString() != sessionUser._id.toString()) {
+      res.status(403).json({ message: "forbidden" });
+    }
+
+    res.render("project/edit-project", {
+      pageTitle: "Edit Project",
+      isAuthenticated: req.session.isLoggedIn,
+      projectData: project,
+      path: "/",
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 exports.postEditProject = async (req, res, next) => {
   const { user: sessionUser } = req.session;
-  const { projectId: sessionProject } = req.params;
+  const { projectId } = req.params;
   const {
     name: updatedName,
     demoUrl: updatedDemoUrl,
@@ -56,21 +79,32 @@ exports.postEditProject = async (req, res, next) => {
     techStack: updatedTechStack,
   } = req.body;
 
-  const { files: updatedImages } = req;
+  const { files: uploadedImages } = req;
+  uploadedImages = uploadedImages.map((i) => ({
+    url: i.path,
+    cloudinaryId: i.filename.split("/")[1],
+  }));
 
   const updatedImagesMetaData = JSON.parse(req.headers["x-images-metadata"]);
 
   try {
-    const project = await Project.findById(sessionProject._id.toString());
+    const project = await Project.findById(projectId);
 
-    //TODO: maybe deal with some of those edge cases
-    updatedImagesMetaData.forEach((img) => {
+    if (project.user.toString() != sessionUser._id.toString()) {
+      res.status(403).json({ message: "forbidden" });
+    }
+
+    project.images.forEach((alreadyPresentImg) => {
       if (
-        !project.images.find((projectImage) => projectImage.url == img.path)
+        !updatedImagesMetaData.find((img) => img.url == alreadyPresentImg.url)
       ) {
         cloudinary.uploader.destroy(
-          process.env.CLOUDINARY_FOLDER_NAME + "/" + projectImage.cloudinaryId
+          process.env.CLOUDINARY_FOLDER_NAME +
+            "/" +
+            alreadyPresentImg.cloudinaryId
         );
+      } else {
+        uploadedImages.push(alreadyPresentImg);
       }
     });
 
@@ -78,10 +112,7 @@ exports.postEditProject = async (req, res, next) => {
     project.description = updatedDescription;
     project.links.demo = updatedDemoUrl;
     project.links.sourceCode = updatedSourceUrl;
-    project.images = updatedImages.map((file) => ({
-      url: file.path,
-      cloudinaryId: file.filename.split("/")[1],
-    }));
+    project.images = uploadedImages;
     project.technologies = JSON.parse(updatedTechStack).map((t) => t.tag);
 
     await project.save();
