@@ -37,6 +37,7 @@ router.get(
 
 router.post(
   "/projects/edit-project/:projectId",
+  permitAuth(projectPermission),
   projectController.postEditProject
 );
 

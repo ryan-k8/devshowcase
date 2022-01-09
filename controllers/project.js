@@ -49,13 +49,8 @@ exports.postAddProject = async (req, res, next) => {
 exports.getEditProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
-    const { user: sessionUser } = req.session;
 
     const project = await Project.findById(projectId);
-
-    if (project.user.toString() != sessionUser._id.toString()) {
-      res.status(403).json({ message: "forbidden" });
-    }
 
     res.render("project/edit-project", {
       pageTitle: "Edit Project",
@@ -69,7 +64,6 @@ exports.getEditProject = async (req, res, next) => {
 };
 
 exports.postEditProject = async (req, res, next) => {
-  const { user: sessionUser } = req.session;
   const { projectId } = req.params;
   const {
     name: updatedName,
@@ -89,10 +83,6 @@ exports.postEditProject = async (req, res, next) => {
 
   try {
     const project = await Project.findById(projectId);
-
-    if (project.user.toString() != sessionUser._id.toString()) {
-      res.status(403).json({ message: "forbidden" });
-    }
 
     project.images.forEach((alreadyPresentImg) => {
       if (
