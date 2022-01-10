@@ -44,4 +44,11 @@ router.post(
   projectController.postEditProject
 );
 
+router.post(
+  "/projects/delete-project/:projectId",
+  getAuth,
+  permitAuth(projectPermission),
+  projectController.postDeleteProject
+);
+
 module.exports = router;

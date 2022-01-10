@@ -1,4 +1,3 @@
-const upload = require("../middlewares/upload");
 const Project = require("../models/project");
 const { cloudinary } = require("../util/cloudinary");
 
@@ -116,6 +115,25 @@ exports.postEditProject = async (req, res, next) => {
 
     await project.save();
     res.status(201).json({ message: "edited" });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.postDeleteProject = async (req, res, next) => {
+  const { projectId } = req.params;
+
+  try {
+    const project = await Project.findById(projectId);
+
+    project.images.forEach((img) => {
+      cloudinary.uploader.destroy(
+        process.env.CLOUDINARY_FOLDER_NAME + "/" + img.cloudinaryId
+      );
+    });
+
+    await project.remove();
+    res.status(200).json({ message: "deleted" });
   } catch (err) {
     console.log(err);
   }
