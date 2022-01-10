@@ -1,13 +1,15 @@
 module.exports = (permittedfileTypes, maxFileSize, maxFileNumber) => {
   return async (req, res, next) => {
     try {
-      const imagesMetaData = JSON.parse(req.headers["x-images-metadata"]);
+      const { sentImages: sentImagesMetaData } = JSON.parse(
+        req.headers["x-images-metadata"]
+      );
 
-      if (imagesMetaData.length > maxFileNumber) {
+      if (sentImagesMetaData.length > maxFileNumber) {
         throw new Error("");
       }
 
-      imagesMetaData.forEach((uploadedImg) => {
+      sentImagesMetaData.forEach((uploadedImg) => {
         if (
           uploadedImg.size > maxFileSize ||
           !permittedfileTypes.includes(uploadedImg.mimeType)

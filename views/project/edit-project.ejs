@@ -2,7 +2,7 @@
 </head>
 <body>
 <%- include('../includes/nav.ejs') %>
-<section id="main-section" class="p-1 my-1">
+<section id="edit-project" class="p-1 my-1">
     <div class="container p-1 z-depth-2">
         <div class="row">
             <div class="col s12 my-1 p-1" style="text-align: center;"></div>
@@ -10,7 +10,7 @@
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="material-icons prefix">badge</i>
-                    <input name='project-name' value='' id="project-name" type="text" class="validate">
+                    <input name='project-name' value='<%= projectData.name %>' id="project-name" type="text" class="validate">
                     <label for="project-name">Project Name</label>
                     </div>
                 </div>
@@ -18,6 +18,7 @@
                     <div class="input-field col s12">
                         <i class="material-icons prefix">mode_edit</i>
                         <textarea name='project-description' id="project-description-text" class="materialize-textarea" data-length='420'>
+                            <%= projectData.description.trim() %>
                         </textarea>
                         <label for="project-description-text">Description</label>
                     </div>
@@ -26,25 +27,48 @@
                 <div class="row">
                     <div class="input-field col s6">
                         <i class="material-icons prefix">cloud</i>
-                        <input name='demo-link' value='' id="demo-link" type="text" class="validate">
+                        <input name='demo-link' value='<%= projectData.links.demo %>' id="demo-link" type="text" class="validate">
                         <label for="demo-link">Demo Url</label>
                     </div>
                     <div class="input-field col s6">
                         <i class="material-icons prefix">source</i>
-                        <input name='sc-link' value='' id="sc-link" type="text" class="validate">
+                        <input name='sc-link' value='<%= projectData.links.sourceCode %>' id="sc-link" type="text" class="validate">
                         <label for="sc-link">Source Url</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="file-field input-field col s12">
-                      <div class="btn deep-purple lighten-1 waves-effect tooltipped" data-tooltip="project images">
+                      <div class="btn deep-purple lighten-1 waves-effect tooltipped" data-tooltip="(new) project images">
                         <span><i class="material-icons">image</i></span>
                         <input type="file" id="project-images-filepicker" multiple accept=".jpg,.png,.jpeg">
                       </div>
                       <div class="file-path-wrapper">
-                        <input class="file-path"type="text" disabled placeholder="Max 2 IMGs(jpeg/jpg/png)( max 2.5MB each)">
+                        <input class="file-path"type="text" disabled placeholder="(including previous imgs) only 2 imgs allowed">
                       </div>
                     </div>
+                </div>
+
+                <div class="header poppins-text">Previous Project Images
+                    <div class="divider"></div>
+                </div>                
+
+                <div class="row prev-images-div" data-prev-images="<%= JSON.stringify(projectData.images) %>">
+                    <% projectData.images.forEach(img => { %>
+                        <div class="col prev-project-image s12 m6 l4 xl4">
+                            <div class="card">
+                                <div class="card-image waves-effect waves-block waves-light">
+                                    <img class="activator" src="<%= img.url %>">
+                                </div>
+                                <div class="card-content image-del-div">
+                                    <span class="card-title activator">
+                                        <span class="material-icons right image-del-btn" data-image-id="<%= img.cloudinaryId %>">close</span>
+                                    </span>
+                                </div>
+
+                                </div>   
+                       </div>
+                    <% }); %> 
+                        
                 </div>
                 
                 <div class="row">
@@ -54,8 +78,8 @@
                     </div>
                 </div>
                 <div class="form-submit-div" style="display: flex;justify-content: center;">
-                    <button id='form-submit' class="btn deep-purple lighten-1 waves-effect waves-light" type="submit">Add
-                        <i class="material-icons right">add_circle</i>
+                    <button id='form-submit' class="btn deep-purple lighten-1 waves-effect waves-light" type="submit">Update
+                        <i class="material-icons right">update</i>
                     </button>
                 </div>
                         
@@ -66,11 +90,26 @@
 
 <script>
     document.querySelector('textarea').value=document.querySelector('textarea').value.trim();
-    
-    userTech = [];
+
+    let selectedImages = JSON.parse(document.querySelector('.prev-images-div').getAttribute('data-prev-images'));
+
+    document.querySelector('.prev-images-div').addEventListener('click',(e) => {
+        if (e.target.classList.contains('image-del-btn')) {
+            
+            console.log(e.target);
+            const removedImage = e.target.getAttribute('data-image-id');
+            selectedImages = selectedImages.filter((img) => img.cloudinaryId  != removedImage ) ;
+
+            e.target.parentElement.parentElement.parentElement.parentElement.remove();
+
+        }
+    });
+
+    projectTech ="<%= projectData.technologies %>".trim() == "" ? [] : "<%= projectData.technologies %>".split(",").map((name) => { return {tag:name}});
+
     
     $('.chips-autocomplete').chips({
-        data:userTech,
+        data:projectTech,
         autocompleteOptions: {
         data: {
         'android':null,
@@ -120,7 +159,7 @@
         const projectImages= document.querySelector('#project-images-filepicker'); 
         
         function formSubmissionDataHelper(data) {
-            if (data.projectName =='' || data.projectDescription=='' || data.projectTechStack.length < 1 || data.projectImages.files.length < 1) {
+            if (data.projectName =='' || data.projectDescription=='' || data.projectTechStack.length < 1 || (data.projectImages.files.length < 1 && data.selectedPrevImages.length == 0 )) {
                 throw new Error('name/description/techstack/images cannot be empty');
             }
             const formData = new FormData();
@@ -131,22 +170,27 @@
             formData.append('description',data.description);
             formData.append('techStack',JSON.stringify(data.projectTechStack));
 
-            const fileApiImagesMetaData= []; 
-            for(let i=0;(i<data.projectImages.files.length) && (i!=2);i++) {
+            const fileApiImagesMetadata= []; 
+
+            if ((data.selectedPrevImages.length+data.projectImages.files.length )<=2) {
+
+                for(let i=0;(i<data.projectImages.files.length) && (i!=2);i++) {
                 const file = data.projectImages.files[i];
                 if (((file.size)/1024)/1024 > 2.5) {
                     throw new Error('file size more than 2.5MB not allowed');
                 }
 
                 formData.append("image",data.projectImages.files[i]);
-                fileApiImagesMetaData.push({
+                fileApiImagesMetadata.push({
                     size:((file.size)/1024)/1024,
                     mimeType:file.type,
-                });
-                
+                });   
+            }
+            } else {
+                throw new Error ('total no of images cannot be more than 2')
             }
 
-            return {formData:formData,imagesMetaData:JSON.stringify({sentImages:fileApiImagesMetaData,})};
+            return {formData:formData,imagesMetaData:JSON.stringify({prevImages:data.selectedPrevImages,sentImages:fileApiImagesMetadata})};
         }
     
         const input = {
@@ -155,13 +199,15 @@
             sourceCodeUrl:sourceCodeUrl, 
             description:projectDescription,
             projectImages:projectImages,
+            selectedPrevImages:selectedImages,
             projectTechStack:projectTechStackData,
         }
 
         try {
             const {formData,imagesMetaData} = formSubmissionDataHelper(input);
+            console.log(imagesMetaData);
             
-            const response = await fetch('http://localhost:3000/projects/add-project',{
+            const response = await fetch('http://localhost:3000/projects/edit-project/<%= projectData._id.toString() %>',{
                     method:'POST',
                     body:formData,
                     headers: {
@@ -172,6 +218,10 @@
             if (response.status==500 || response.status==409) {
                 const serverError = await response.json();
                 throw new Error(`server error :${serverError.message}`);
+            }
+
+            if (response.status==201 ) {
+                M.toast({html:"edited!"});
             }
 
             if (response.redirected && response.url) {

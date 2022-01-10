@@ -37,7 +37,10 @@ router.get(
 
 router.post(
   "/projects/edit-project/:projectId",
+  getAuth,
   permitAuth(projectPermission),
+  uploadValidator(["image/jpeg", "image/jpg", "image/png"], 2.5, 2),
+  upload.array("image", 2),
   projectController.postEditProject
 );
 

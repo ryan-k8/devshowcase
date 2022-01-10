@@ -52,11 +52,13 @@ exports.getEditProject = async (req, res, next) => {
 
     const project = await Project.findById(projectId);
 
+    console.log(project);
+
     res.render("project/edit-project", {
       pageTitle: "Edit Project",
       isAuthenticated: req.session.isLoggedIn,
       projectData: project,
-      path: "/",
+      path: "/projects",
     });
   } catch (err) {
     console.log(err);
@@ -65,6 +67,7 @@ exports.getEditProject = async (req, res, next) => {
 
 exports.postEditProject = async (req, res, next) => {
   const { projectId } = req.params;
+  console.log(req.body);
   const {
     name: updatedName,
     demoUrl: updatedDemoUrl,
@@ -73,21 +76,27 @@ exports.postEditProject = async (req, res, next) => {
     techStack: updatedTechStack,
   } = req.body;
 
-  const { files: uploadedImages } = req;
-  uploadedImages = uploadedImages.map((i) => ({
-    url: i.path,
-    cloudinaryId: i.filename.split("/")[1],
-  }));
+  let { files: uploadedImages } = req;
+  if (uploadedImages) {
+    uploadedImages = uploadedImages.map((i) => ({
+      url: i.path,
+      cloudinaryId: i.filename.split("/")[1],
+    }));
+  } else {
+    uploadedImages = [];
+  }
 
-  const updatedImagesMetaData = JSON.parse(req.headers["x-images-metadata"]);
+  const { prevImages: prevImagesMetaData } = JSON.parse(
+    req.headers["x-images-metadata"]
+  );
+
+  console.log(prevImagesMetaData);
 
   try {
     const project = await Project.findById(projectId);
 
     project.images.forEach((alreadyPresentImg) => {
-      if (
-        !updatedImagesMetaData.find((img) => img.url == alreadyPresentImg.url)
-      ) {
+      if (!prevImagesMetaData.find((img) => img.url == alreadyPresentImg.url)) {
         cloudinary.uploader.destroy(
           process.env.CLOUDINARY_FOLDER_NAME +
             "/" +
@@ -106,7 +115,7 @@ exports.postEditProject = async (req, res, next) => {
     project.technologies = JSON.parse(updatedTechStack).map((t) => t.tag);
 
     await project.save();
-    req.status(201).json({ message: "edited" });
+    res.status(201).json({ message: "edited" });
   } catch (err) {
     console.log(err);
   }
