@@ -1,0 +1,24 @@
+<script>
+  class Loader {
+    static init() {
+      const alreadyExists = document.querySelector(".progress");
+      if (!alreadyExists) {
+        const progress = document.createElement("div");
+        progress.classList.add(
+          "progress",
+          "custom-progress",
+          "deep-purple",
+          "lighten-2"
+        );
+
+        progress.innerHTML = '<div class="indeterminate deep-purple"></div>';
+
+        document.body.prepend(progress);
+      }
+    }
+
+    static remove() {
+      document.querySelector(".progress").remove();
+    }
+  }
+</script>

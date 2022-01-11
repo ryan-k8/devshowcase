@@ -66,9 +66,7 @@
 
 <script>
     document.querySelector('textarea').value=document.querySelector('textarea').value.trim();
-    
     userTech = [];
-    
     $('.chips-autocomplete').chips({
         data:userTech,
         autocompleteOptions: {
@@ -160,6 +158,7 @@
 
         try {
             const {formData,imagesMetaData} = formSubmissionDataHelper(input);
+            Loader.init();
             
             const response = await fetch('http://localhost:3000/projects/add-project',{
                     method:'POST',
@@ -168,6 +167,8 @@
                         'X-images-metadata':imagesMetaData,
                     }
                 });
+
+            Loader.remove();
             
             if (response.status==500 || response.status==409) {
                 const serverError = await response.json();
@@ -181,6 +182,7 @@
         } catch (err) {
             M.toast({html:`<p class='poppins-text'>${err.message}</p>`})
             console.log(err);
+            Loader.remove();
         }
 
     });
