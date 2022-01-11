@@ -3,6 +3,18 @@ const { cloudinary } = require("../util/cloudinary");
 
 require("dotenv").config();
 
+exports.getProjects = async (req, res, next) => {
+  //TODO
+};
+
+exports.getUserProjects = async (req, res, next) => {
+  //TODO
+};
+
+exports.getProject = async (req, res, next) => {
+  //TODO
+};
+
 exports.getAddProject = async (req, res, next) => {
   try {
     res.render("project/add-project", {

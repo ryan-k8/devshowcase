@@ -9,7 +9,20 @@ const uploadValidator = require("../middlewares/upload-validator");
 
 const projectPermission = require("../permissions/project");
 
+router.get("/projects", projectController.getProjects);
+
+router.get("/projects/:userId", projectController.getUserProjects);
+
+router.get("/project/:projectId", projectController.getProject);
+
 router.get("/projects/add-project", getAuth, projectController.getAddProject);
+
+router.get(
+  "/projects/edit-project/:projectId",
+  getAuth,
+  permitAuth(projectPermission),
+  projectController.getEditProject
+);
 
 router.post(
   "/projects/add-project",
@@ -17,22 +30,6 @@ router.post(
   uploadValidator(["image/jpeg", "image/jpg", "image/png"], 2.5, 2),
   upload.array("image", 2),
   projectController.postAddProject
-);
-
-//TODO
-router.get("/projects/:userId", (req, res) => {
-  res.json({ message: "OK" });
-});
-
-router.get("/project/:projectId", (req, res) => {
-  res.json({ message: "OK" });
-});
-
-router.get(
-  "/projects/edit-project/:projectId",
-  getAuth,
-  permitAuth(projectPermission),
-  projectController.getEditProject
 );
 
 router.post(
