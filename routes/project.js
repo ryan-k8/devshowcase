@@ -9,12 +9,6 @@ const uploadValidator = require("../middlewares/upload-validator");
 
 const projectPermission = require("../permissions/project");
 
-router.get("/projects", projectController.getProjects);
-
-router.get("/projects/:userId", projectController.getUserProjects);
-
-router.get("/project/:projectId", projectController.getProject);
-
 router.get("/projects/add-project", getAuth, projectController.getAddProject);
 
 router.get(
@@ -23,6 +17,12 @@ router.get(
   permitAuth(projectPermission),
   projectController.getEditProject
 );
+
+router.get("/projects/:userId", projectController.getUserProjects);
+
+router.get("/project/:projectId", projectController.getProject);
+
+router.get("/projects", projectController.getProjects);
 
 router.post(
   "/projects/add-project",

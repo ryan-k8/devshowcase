@@ -1,18 +1,124 @@
 const Project = require("../models/project");
+const User = require("../models/user");
 const { cloudinary } = require("../util/cloudinary");
-
+const ITEMS_PER_PAGE = 6;
 require("dotenv").config();
 
 exports.getProjects = async (req, res, next) => {
-  //TODO
+  const { search } = req.query;
+  let { page } = req.query;
+
+  try {
+    if (!page && !search) {
+      res.render("projects/index", {
+        pageTitle: "Projects",
+        isAuthenticated: req.session.isLoggedIn,
+        path: "/projects",
+        search: [],
+        pagination: [],
+      });
+    }
+
+    if (search) {
+      page = typeof page === typeof undefined ? 1 : page;
+
+      const total = await Project.find({
+        technologies: { $in: search.split(" ") },
+      })
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .sort({ createdAt: -1 })
+        .countDocuments();
+
+      const resultantProjects = await Project.find({
+        technologies: { $in: search.split(" ") },
+      })
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE)
+        .sort({ createdAt: -1 })
+        .select({
+          name: 1,
+          images: 1,
+          technologies: 1,
+          description: 1,
+        });
+
+      res.render("projects/index", {
+        pageTitle: "Add Project",
+        isAuthenticated: req.session.isLoggedIn,
+        path: "/projects",
+        search: search.split(" "),
+        pagination: {
+          data: resultantProjects,
+          hasPreviousPage: page > 1,
+          previousPage: page - 1,
+          total: total,
+          currentPage: page,
+          hasNextPage: ITEMS_PER_PAGE * page < total,
+          nextPage: parseInt(page) + 1,
+          lastPage: Math.ceil(total / ITEMS_PER_PAGE),
+        },
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 exports.getUserProjects = async (req, res, next) => {
-  //TODO
+  let { page } = req.query;
+  const { userId } = req.params;
+  try {
+    page = typeof page === typeof undefined ? 1 : page;
+
+    const total = await Project.find({ user: userId }).countDocuments();
+
+    const user = await User.find({ user: userId }).select({
+      userName: 1,
+      avatar: 1,
+    });
+
+    const resultantProjects = await Project.find({ user: userId })
+      .skip((page - 1) * ITEMS_PER_PAGE)
+      .limit(ITEMS_PER_PAGE)
+      .sort({ createdAt: -1 })
+      .select({ name: 1, description: 1, images: 1, technologies: 1 });
+
+    res.render("projects/user-projects", {
+      pageTitle: "Add Project",
+      isAuthenticated: req.session.isLoggedIn,
+      path: "/projects",
+      user: user,
+      pagination: {
+        data: resultantProjects,
+        hasPreviousPage: page > 1,
+        previousPage: page - 1,
+        total: total,
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < total,
+        nextPage: parseInt(page) + 1,
+        lastPage: Math.ceil(total / ITEMS_PER_PAGE),
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 exports.getProject = async (req, res, next) => {
-  //TODO
+  try {
+    const { projectId } = req.params;
+
+    const project = await Project.findById(projectId);
+
+    res.render("/projects/project", {
+      pageTitle: project.name || "Project",
+      isAuthenticated: req.session.isLoggedIn,
+      path: "/projects",
+      project: project,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 exports.getAddProject = async (req, res, next) => {
