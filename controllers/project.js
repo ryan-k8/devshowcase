@@ -1,7 +1,7 @@
 const Project = require("../models/project");
 const User = require("../models/user");
 const { cloudinary } = require("../util/cloudinary");
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 2;
 require("dotenv").config();
 
 exports.getProjects = async (req, res, next) => {
@@ -10,12 +10,13 @@ exports.getProjects = async (req, res, next) => {
 
   try {
     if (!page && !search) {
-      res.render("projects/index", {
+      res.render("project/index", {
         pageTitle: "Projects",
+        user: req.session.user,
         isAuthenticated: req.session.isLoggedIn,
         path: "/projects",
         search: [],
-        pagination: [],
+        pagination: {},
       });
     }
 
@@ -24,10 +25,7 @@ exports.getProjects = async (req, res, next) => {
 
       const total = await Project.find({
         technologies: { $in: search.split(" ") },
-      })
-        .skip((page - 1) * ITEMS_PER_PAGE)
-        .sort({ createdAt: -1 })
-        .countDocuments();
+      }).countDocuments();
 
       const resultantProjects = await Project.find({
         technologies: { $in: search.split(" ") },
@@ -42,17 +40,18 @@ exports.getProjects = async (req, res, next) => {
           description: 1,
         });
 
-      res.render("projects/index", {
+      res.render("project/index", {
         pageTitle: "Add Project",
         isAuthenticated: req.session.isLoggedIn,
         path: "/projects",
+        user: req.session.user,
         search: search.split(" "),
         pagination: {
           data: resultantProjects,
           hasPreviousPage: page > 1,
-          previousPage: page - 1,
+          previousPage: parseInt(page) - 1,
           total: total,
-          currentPage: page,
+          currentPage: parseInt(page),
           hasNextPage: ITEMS_PER_PAGE * page < total,
           nextPage: parseInt(page) + 1,
           lastPage: Math.ceil(total / ITEMS_PER_PAGE),

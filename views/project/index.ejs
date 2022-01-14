@@ -1,0 +1,112 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+<%- include('../includes/nav.ejs') %>
+<% if (isAuthenticated) { %>
+    <div class="fixed-action-btn hover-to-toggle" style="bottom:50px; right:25px;">
+        <a class="btn-floating btn-large red">
+            <i class="large material-icons deep-purple lighten-1">mode_edit</i>
+        </a>
+        <ul>
+            
+            <li>
+                <a href="/projects/add-project" class="btn-floating amber darken-1"><i class="material-icons">add</i></a>
+                <a href="#" class="btn-floating mobile-fab-tip">Add Project</a>
+            </li>
+            
+            <li>
+                <a href="/projects/<%= user._id.toString() %>" class="btn-floating blue"><i class="material-icons">supervisor_account</i></a>
+                <a href="" class="btn-floating mobile-fab-tip">My Projects</a> 
+            </li>         
+        </ul>
+    </div>    
+<% } %>
+
+<section id="projects-search-section">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 l8">
+                <div class="search-bar">
+                    
+                <div class="input-field project-search-field z-depth-2">
+                    <input id="search" type="search" required>
+                    <label class="label-icon" for="search"><i class="material-icons" style="transform: translateY(10px);
+                        font-size: 2rem;">search</i></label>
+                    <i class="material-icons" style="transform: translateY(10px);
+                    font-size: 2rem;">close</i>
+                  </div>
+                </div>
+            </div>
+            <div class="col s12 poppins-text search-meta" style="font-size: 1.3rem;">
+                <% if (search.length >=1 && Object.keys(pagination).length > 1 ) { %>
+                    <% if (pagination.currentPage == 1 ) { %>
+                        <%= pagination.total %> results found for "<%= search %>"
+
+                    <% } else { %>
+                        <%= pagination.data.length <= 0 ? "nothing found": '' %>
+                    <% } %>
+
+                <% } else { %>
+                    search project based on technologies/langs
+                <% } %>
+            </div>
+            <div class="col s12">
+                 <div class="row found-projects">
+                        <% if (pagination.data) { %>
+                            <% pagination.data.forEach(project => { %>
+                                <div class="col project s12 m6 l4 xl4">
+                                        <div class="card">
+                                            <div class="card-image waves-effect waves-block waves-light">
+                                                <img class="activator" src="<%= project.images[0].url %>">
+                                            </div>
+                                            <div class="card-content">
+                                                <span class="card-title activator grey-text text-darken-4"><%= project.name %><i class="material-icons right">more_vert</i></span>
+                                                <p><a href="#">View</a></p>    
+                                            </div>
+                                            <div class="card-reveal">
+                                                <span class="card-title grey-text text-darken-4"><%= project.name %><i class="material-icons right">close</i></span>
+                                                <p><%= project.description %></p>
+                                                <br>
+                                                <div>
+                                                    <% project.technologies.forEach(technology => { %>
+                                                        <div class="chip"><%= technology %></div>
+                                                    <% }); %>
+                                                </div>
+                                            </div>
+                                         </div>   
+                                 </div>
+                            <% }); %>
+                        <% } %>
+                </div>
+            </div>
+            <div class="col s12 pagination-div" style="display: flex;flex-direction: row;justify-content: center;">
+                <% if (Object.keys(pagination).length > 1 && pagination.lastPage >= pagination.currentPage ) { %>
+                    <ul class="pagination">
+                        <li class="waves-effect <%= pagination.hasPreviousPage == false ?  'disabled': 'idkbth' %>">
+                <a href="<%= pagination.currentPage - 1 >= 1 ?  '' : '#' %>/projects?search=<%= search.join(' ')%>&page=<%= pagination.previousPage %>">
+                            <i class="material-icons">chevron_left</i></a>
+                        </li>
+
+                        <li class="active deep-purple lighten-1"><a href="#"><%= pagination.currentPage %></a></li>
+
+                        <% if (pagination.hasNextPage) { %> 
+                                <li class="waves-effect"><a href="/projects?search=<%= search.join(' ')%>&page=<%= pagination.nextPage %>"><%= pagination.nextPage %></a></li>
+
+                                <% if (pagination.currentPage != pagination.lastPage && pagination.nextPage != pagination.lastPage ) { %>
+                                    <li class="waves-effect">
+                                        <a href="/projects?search=<%= search.join(' ')%>&page=<%= pagination.lastPage %>"><%= pagination.lastPage %></a></li>
+                                <% } %>
+
+                        <% } %>
+                                
+                        <li class="waves-effect <%= (pagination.currentPage == pagination.lastPage || !(pagination.hasNextPage) ? 'disabled': '') %>">
+            <a href="<%= pagination.currentPage==pagination.lastPage ? '#': '' %>/projects?search=<%= search.join(' ')%>&page=<%= pagination.nextPage %>">
+                            <i class="material-icons">chevron_right</i></a></li>
+                    </ul>
+                <% } %>
+            </div>
+        </div>
+        </div>
+    </div>
+</section>
+<%-include ('../includes/end.ejs') %>

@@ -93,3 +93,14 @@
   visibility: visible !important;
   height: 5.25px !important;
 }
+
+.mobile-fab-tip {
+  position: fixed;
+  right: 85px;
+  padding: 0px 0.5rem;
+  text-align: right;
+  background-color: #323232;
+  border-radius: 2px;
+  color: #fff;
+  width: auto;
+}

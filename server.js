@@ -51,8 +51,8 @@ app.use((err, req, res, next) => {
     if (statusCode && message) {
       return res.status(statusCode).json({ message: message });
     }
-    return res.status(500).json({ message: "internal server error" });
     console.log(err);
+    return res.status(500).json({ message: "internal server error" });
   } catch (err) {
     console.log(err);
   }

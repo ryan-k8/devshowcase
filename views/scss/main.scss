@@ -168,4 +168,37 @@
   }
 }
 
+#projects-search-section {
+  margin: 0.8rem auto;
+  padding: 1rem;
+
+  .search-bar {
+    .project-search-field {
+      position: relative;
+      border-radius: 50px;
+      padding: 0.25rem;
+
+      #search {
+        border-bottom: none !important;
+        padding-left: 4rem !important;
+        height: 40px;
+        width: calc(100% - 4rem);
+        border: none;
+        transition: background-color 5000s ease-in-out 0s !important;
+
+        border-top-left-radius: 50px;
+        border-bottom-left-radius: 50px;
+
+        &:active {
+          background-color: transparent;
+        }
+      }
+
+      .label-icon {
+        left: 1rem;
+      }
+    }
+  }
+}
+
 @import "./media";
