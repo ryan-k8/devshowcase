@@ -1,7 +1,7 @@
 const Project = require("../models/project");
 const User = require("../models/user");
 const { cloudinary } = require("../util/cloudinary");
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 3;
 require("dotenv").config();
 
 exports.getProjects = async (req, res, next) => {
@@ -71,7 +71,7 @@ exports.getUserProjects = async (req, res, next) => {
 
     const total = await Project.find({ user: userId }).countDocuments();
 
-    const user = await User.find({ user: userId }).select({
+    const user = await User.findOne({ _id: userId }).select({
       userName: 1,
       avatar: 1,
     });
@@ -82,17 +82,19 @@ exports.getUserProjects = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .select({ name: 1, description: 1, images: 1, technologies: 1 });
 
-    res.render("projects/user-projects", {
+    res.render("project/user-projects", {
       pageTitle: "Add Project",
       isAuthenticated: req.session.isLoggedIn,
       path: "/projects",
       user: user,
+      sessionUser: req.session.user,
+      search: ["react", "node"],
       pagination: {
         data: resultantProjects,
         hasPreviousPage: page > 1,
-        previousPage: page - 1,
+        previousPage: parseInt(page) - 1,
         total: total,
-        currentPage: page,
+        currentPage: parseInt(page),
         hasNextPage: ITEMS_PER_PAGE * page < total,
         nextPage: parseInt(page) + 1,
         lastPage: Math.ceil(total / ITEMS_PER_PAGE),

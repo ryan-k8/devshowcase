@@ -201,4 +201,34 @@
   }
 }
 
+#user-projects-section {
+  margin: 0.8rem auto;
+  padding: 1rem;
+
+  .round-user-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: 1.2rem;
+    align-items: center;
+    padding: 1rem 0.75rem;
+    border-radius: 45px;
+    min-height: 4.5rem;
+
+    > div {
+      img {
+        max-width: 3rem;
+        height: 90%;
+      }
+    }
+    .user-info {
+      font-size: 1.2rem !important;
+
+      .a {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
 @import "./media";

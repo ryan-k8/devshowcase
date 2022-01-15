@@ -15,42 +15,39 @@
             </li>
             
             <li>
-                <a href="/projects/<%= user._id.toString() %>" class="btn-floating blue"><i class="material-icons">supervisor_account</i></a>
+                <a href="/projects/user/<%= sessionUser._id.toString() %>" class="btn-floating blue"><i class="material-icons">supervisor_account</i></a>
                 <a href="" class="btn-floating mobile-fab-tip">My Projects</a> 
             </li>         
         </ul>
     </div>    
 <% } %>
 
-<section id="projects-search-section">
+<section id="user-projects-section">
     <div class="container">
         <div class="row">
-            <div class="col s12 l8">
-                <div class="search-bar">
-                    
-                <div class="input-field project-search-field z-depth-2">
-                    <input id="search" type="search" required>
-                    <label class="label-icon" for="search"><i class="material-icons" style="transform: translateY(10px);
-                        font-size: 2rem;">search</i></label>
-                    <i class="material-icons" style="transform: translateY(10px);
-                    font-size: 2rem;">close</i>
-                  </div>
-                </div>
-            </div>
-            <div class="col s12 poppins-text search-meta" style="font-size: 1.3rem;">
-                <% if (search.length >=1 && Object.keys(pagination).length > 1 ) { %>
-                    <% if (pagination.currentPage == 1 ) { %>
-                        <%= pagination.total %> results found for "<%= search %>"
-
-                    <% } else { %>
-                        <%= pagination.data.length <= 0 ? "nothing found": '' %>
-                    <% } %>
+            <div class="col s12 l6">
+                <% if (user) { %>
+                    <div class="round-user-header z-depth-1">
+                        <div>
+                            <img src="<%= user.avatar %>" class="circle z-depth-1" alt="<%= user.name %>" >
+                        </div>
+                        <div class="user-info poppins-text"><a href="/profile/<%= user._id.toString() %>"class="user-login-span">
+                            <%= user.userName %></a> has <%= pagination.total == 0 ? "no" : pagination.total %> projects
+                        </div>
 
                 <% } else { %>
-                    search project based on technologies/langs
+                    <div class="round-user-header z-depth-1">
+                        <div>
+                            <img src="https://i.pinimg.com/236x/c9/0a/d7/c90ad748ff7e3287e52d138c6873d9c1.jpg" class="circle z-depth-1" alt="" >
+                        </div>
+                        <div class="user-info poppins-text"><a href="#no-profile"class="user-login-span">
+                            no such user exists
+                        </div>
                 <% } %>
+
+               </div>
             </div>
-            <div class="col s12">
+            <div class="col s12 my-4">
                  <div class="row found-projects">
                         <% if (pagination.data) { %>
                             <% pagination.data.forEach(project => { %>
@@ -61,7 +58,7 @@
                                             </div>
                                             <div class="card-content">
                                                 <span class="card-title activator grey-text text-darken-4"><%= project.name %><i class="material-icons right">more_vert</i></span>
-                                                <p><a href="/project/<%= project._id.toString() %>">View</a></p>    
+                                                <p><a href="/project/<%= project._id %>">View</a></p>    
                                             </div>
                                             <div class="card-reveal">
                                                 <span class="card-title grey-text text-darken-4"><%= project.name %><i class="material-icons right">close</i></span>
@@ -83,24 +80,26 @@
                 <% if (Object.keys(pagination).length > 1 && pagination.lastPage >= pagination.currentPage ) { %>
                     <ul class="pagination">
                         <li class="waves-effect <%= pagination.hasPreviousPage == false ?  'disabled': 'idkbth' %>">
-                <a href="<%= pagination.currentPage - 1 >= 1 ?  '' : '#' %>/projects?search=<%= search.join(' ')%>&page=<%= pagination.previousPage %>">
+                <a href="<%= pagination.currentPage - 1 >= 1 ?  '' : '#' %>/projects/user/<%= user._id.toString() %>?page=<%= pagination.previousPage %>">
                             <i class="material-icons">chevron_left</i></a>
                         </li>
 
                         <li class="active deep-purple lighten-1"><a href="#"><%= pagination.currentPage %></a></li>
 
                         <% if (pagination.hasNextPage) { %> 
-                                <li class="waves-effect"><a href="/projects?search=<%= search.join(' ')%>&page=<%= pagination.nextPage %>"><%= pagination.nextPage %></a></li>
+                                <li class="waves-effect">
+                        <a href="/projects/user/<%= user._id.toString() %>?page=<%= pagination.nextPage %>">
+                            <%= pagination.nextPage %></a></li>
 
                                 <% if (pagination.currentPage != pagination.lastPage && pagination.nextPage != pagination.lastPage ) { %>
                                     <li class="waves-effect">
-                                        <a href="/projects?search=<%= search.join(' ')%>&page=<%= pagination.lastPage %>"><%= pagination.lastPage %></a></li>
+                                        <a href="/projects/user/<%= user._id.toString() %>?page=<%= pagination.lastPage %>"><%= pagination.lastPage %></a></li>
                                 <% } %>
 
                         <% } %>
                                 
                         <li class="waves-effect <%= (pagination.currentPage == pagination.lastPage || !(pagination.hasNextPage) ? 'disabled': '') %>">
-            <a href="<%= pagination.currentPage==pagination.lastPage ? '#': '' %>/projects?search=<%= search.join(' ')%>&page=<%= pagination.nextPage %>">
+            <a href="<%= pagination.currentPage==pagination.lastPage ? '#': '' %>/projects/user/<%= user._id.toString() %>?page=<%= pagination.nextPage %>">
                             <i class="material-icons">chevron_right</i></a></li>
                     </ul>
                 <% } %>

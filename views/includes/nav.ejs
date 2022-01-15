@@ -67,7 +67,7 @@
         </li>
         <% if (isAuthenticated) { %>
         <li class="<%= path=='/projects' ? 'active': '' %>">
-          <a href="#" class="tooltipped" data-tooltip="projects"
+          <a href="/projects" class="tooltipped" data-tooltip="projects"
             ><i class="material-icons">work</i></a
           >
         </li>
@@ -117,7 +117,7 @@
   </li>
   <% if (isAuthenticated) { %>
   <li class="<%= path=='/projects' ? 'active': '' %>">
-    <a href="#"><i class="material-icons">work</i>projects</a>
+    <a href="/projects"><i class="material-icons">work</i>projects</a>
   </li>
   <li class="<%= path=='/profile' ? 'active': '' %>">
     <a href="/profile"><i class="material-icons">account_circle</i>profile</a>
