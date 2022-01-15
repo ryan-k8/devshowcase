@@ -18,7 +18,7 @@ router.get(
   projectController.getEditProject
 );
 
-router.get("/projects/:userId", projectController.getUserProjects);
+router.get("/projects/user/:userId", projectController.getUserProjects);
 
 router.get("/project/:projectId", projectController.getProject);
 

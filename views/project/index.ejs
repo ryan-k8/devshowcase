@@ -15,7 +15,7 @@
             </li>
             
             <li>
-                <a href="/projects/<%= user._id.toString() %>" class="btn-floating blue"><i class="material-icons">supervisor_account</i></a>
+                <a href="/projects/user/<%= user._id.toString() %>" class="btn-floating blue"><i class="material-icons">supervisor_account</i></a>
                 <a href="" class="btn-floating mobile-fab-tip">My Projects</a> 
             </li>         
         </ul>
@@ -29,11 +29,11 @@
                 <div class="search-bar">
                     
                 <div class="input-field project-search-field z-depth-2">
-                    <input id="search" type="search" required>
+                    <input id="search" type="search" required placeholder="tech/langs/frameworks/libaries (space seperated)">
                     <label class="label-icon" for="search"><i class="material-icons" style="transform: translateY(10px);
                         font-size: 2rem;">search</i></label>
                     <i class="material-icons" style="transform: translateY(10px);
-                    font-size: 2rem;">close</i>
+                    font-size: 2rem;" onclick="document.getElementById('search').value=null">close</i>
                   </div>
                 </div>
             </div>
@@ -109,4 +109,12 @@
         </div>
     </div>
 </section>
+<script>
+    document.getElementById('search').addEventListener('keyup',(e) => {
+        e.preventDefault();
+        if (e.key == 'Enter') {
+            window.location = `/projects?search=${e.target.value.trim()}`;
+        }
+    })
+</script>
 <%-include ('../includes/end.ejs') %>
