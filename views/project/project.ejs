@@ -1,0 +1,69 @@
+<%- include('../includes/head.ejs') %>
+</head>
+<body>
+<%- include('../includes/nav.ejs') %>
+<div id="project-section">
+    <div class="container p-1">
+        <div class="row">
+            <div class="project-user col s12 l3">
+                <div class="p-1 z-depth-1 project-user-div">
+                    <div class="hide-on-med-and-down">
+                        <img class="circle z-depth-1" src="<%= project.user.avatar %>" alt="<%= project.user.name %>">
+                    </div>
+
+                    <div>
+                        <p class="user-name poppins-text hide-on-med-and-down"><a href="/profile/<%= project.user._id.toString() %>" ><%= project.user.userName %></a></p>
+                        <% if(isAuthenticated) { %>
+                            <% if (sessionUser._id.toString() == project.user._id.toString() ) { %>
+                                <div class="divider"></div>
+                                <div class="auth-user-actions my-1">
+                                <a href="/projects/edit-project/<%= project._id.toString() %>" type="submit" class="btn waves-effect deep-purple lighten-1 tooltipped" data-tooltip="edit project"><i class="material-icons">edit</i></a>
+
+                                    
+                                    <form id="dpf" action="/projects/delete-project/<%= project._id.toString() %>" method="POST">
+                                        <a href="javascript:{}" onclick="document.getElementById('dpf').submit()" type="submit" class="btn waves-effect deep-purple lighten-1 tooltipped" data-tooltip="delete project"><i class="material-icons">delete</i></a>
+                                    </form>
+                                </div>
+    
+                            <% } %>
+                        <% } %>
+                    </div>
+
+                </div>
+            </div>
+            <div class="project-div col s12 l9 z-depth-1">
+                <div class="carousel carousel-slider my-1 p-1">
+                    <% project.images.forEach((img, index) => {  %>
+                    <a class="carousel-item" href="#<%= index %>"><img height="100%" src="<%= img.url %>"></a>
+                    <% }); %>
+<!--                     
+                    <a class="carousel-item"  href="#one!"><img height="100%" src="https://wallpapersmug.com/download/1024x768/5b8d62/enjoy-rain-anime-girl.jpg"></a> -->
+                  </div>
+                <div class="project-detailed-div p-1">
+                    <h5 class='text-header center-align poppins-text' style="margin-top: 0rem;"><%= project.name %>
+                   </h5>
+                   <div class="links-div">
+                       <a href="<%= /https/i.test(project.links.demo) == true ? project.links.demo : '#' %>" class="btn deep-purple lighten-1"><i class="material-icons tooltipped" data-tooltip="deployment">cloud</i></a>
+                       <a  href="<%= /https/i.test(project.links.sourceCode) == true ? project.links.sourceCode : '#' %>" class="btn deep-purple lighten-1 tooltipped" data-tooltip="src code"><i class="material-icons source">source</i></a>
+                   </div>
+                   <p class="project-description-text poppins-text"><%= project.description %></p>
+                   
+                   <div class="project-tech-stack-div">
+                    <% project.technologies.forEach(technology => { %>
+                        <img
+                        class="tech-stack-img tooltipped"
+                        data-tooltip="<%= technology %>"
+                        src="/assets/techstack/<%= technology %>.svg"
+                        alt="<%= technology %>"
+                      />                                          
+                       <% }); %>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%-include ('../includes/end.ejs') %>
+
+

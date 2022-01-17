@@ -231,4 +231,71 @@
   }
 }
 
+#project-section {
+  .project-user {
+    &-div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.2rem !important;
+
+      > div {
+        width: 80%;
+        margin: 0 auto;
+        img {
+          height: 100%;
+
+          width: 95%;
+          margin: 0 auto;
+        }
+
+        ~ div {
+          > p {
+            text-align: center;
+            font-size: 1.2rem;
+          }
+
+          .auth-user-actions {
+            display: flex;
+            flex-direction: row;
+            gap: 0.5rem;
+            justify-content: center;
+          }
+        }
+      }
+    }
+  }
+
+  .project-detailed-div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    .links-div {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .project-tech-stack-div {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 0.5rem;
+      gap: 0.5rem;
+      .tech-stack-img {
+        display: inline-block;
+        width: 3.2rem;
+      }
+    }
+
+    .project-description-text {
+      font-size: 1.1rem;
+      text-align: center;
+    }
+  }
+}
+
 @import "./media";

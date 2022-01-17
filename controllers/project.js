@@ -1,3 +1,4 @@
+const { type } = require("express/lib/response");
 const Project = require("../models/project");
 const User = require("../models/user");
 const { cloudinary } = require("../util/cloudinary");
@@ -109,11 +110,12 @@ exports.getProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
 
-    const project = await Project.findById(projectId);
+    const project = await Project.findById(projectId).populate("user");
 
-    res.render("/projects/project", {
-      pageTitle: project.name || "Project",
+    res.render("project/project", {
+      pageTitle: typeof project == typeof null ? "Project" : project.name,
       isAuthenticated: req.session.isLoggedIn,
+      sessionUser: req.session.user,
       path: "/projects",
       project: project,
     });
@@ -252,7 +254,7 @@ exports.postDeleteProject = async (req, res, next) => {
     });
 
     await project.remove();
-    res.status(200).json({ message: "deleted" });
+    res.redirect(`/projects/user/${req.session.user._id.toString()}`);
   } catch (err) {
     console.log(err);
   }
