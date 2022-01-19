@@ -1,4 +1,3 @@
-const { type } = require("express/lib/response");
 const Project = require("../models/project");
 const User = require("../models/user");
 const { cloudinary } = require("../util/cloudinary");
@@ -156,6 +155,7 @@ exports.postAddProject = async (req, res, next) => {
         cloudinaryId: file.filename.split("/")[1],
       })),
       technologies: JSON.parse(techStack).map((t) => t.tag),
+      comments: [],
     });
 
     await project.save();
@@ -235,7 +235,7 @@ exports.postEditProject = async (req, res, next) => {
     project.technologies = JSON.parse(updatedTechStack).map((t) => t.tag);
 
     await project.save();
-    res.status(201).json({ message: "edited" });
+    res.redirect(`/project/${projectId}`);
   } catch (err) {
     console.log(err);
   }
@@ -255,6 +255,38 @@ exports.postDeleteProject = async (req, res, next) => {
 
     await project.remove();
     res.redirect(`/projects/user/${req.session.user._id.toString()}`);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.postAddComment = async (req, res, next) => {
+  const { projectId } = req.params;
+  const { comment } = req.body;
+  console.log(comment);
+  const { user: sessionUser } = req.session;
+
+  try {
+    const project = await Project.findById(projectId);
+    await project.addComment({
+      userId: sessionUser._id.toString(),
+      comment: comment,
+    });
+
+    res.status(201).json({ message: "CREATED" });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.postDeleteComment = async (req, res, next) => {
+  const { projectId, commentId } = req.params;
+  try {
+    const project = await Project.findById(projectId);
+
+    await project.removeComment(commentId);
+
+    res.status(200).json({ message: "DELETED" });
   } catch (err) {
     console.log(err);
   }

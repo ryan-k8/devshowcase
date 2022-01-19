@@ -8,6 +8,7 @@ const upload = require("../middlewares/upload");
 const uploadValidator = require("../middlewares/upload-validator");
 
 const projectPermission = require("../permissions/project");
+const commentPermission = require("../permissions/comment");
 
 router.get("/projects/add-project", getAuth, projectController.getAddProject);
 
@@ -46,6 +47,19 @@ router.post(
   getAuth,
   permitAuth(projectPermission),
   projectController.postDeleteProject
+);
+
+router.post(
+  "/project/:projectId/add-comment",
+  getAuth,
+  projectController.postAddComment
+);
+
+router.post(
+  "/project/:projectId/delete-comment/:commentId",
+  getAuth,
+  permitAuth(commentPermission),
+  projectController.postDeleteComment
 );
 
 module.exports = router;
