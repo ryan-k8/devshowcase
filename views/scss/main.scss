@@ -296,6 +296,98 @@
       text-align: center;
     }
   }
+
+  .comment-section {
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-button {
+      height: 12px;
+    }
+
+    /* track along which it moves */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* handle/scrollbar itself */
+    ::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 6px;
+      transition: all 0.5s ease;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgb(126, 126, 126);
+    }
+
+    ::-webkit-scrollbar-thumb:focus {
+      background: rgb(126, 126, 126);
+    }
+
+    .comments-show-div {
+      display: flex;
+      justify-content: center;
+    }
+
+    .comments-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0.2rem;
+
+      width: 100%;
+      min-height: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+
+      .user-comment-div {
+        width: 100%;
+
+        .user-pfp {
+          > img {
+            max-height: 50px;
+            border-radius: 50%;
+          }
+        }
+
+        span {
+          cursor: pointer;
+          transition: all 0.2s;
+
+          &:hover {
+            color: #7e57c2;
+          }
+        }
+      }
+    }
+
+    .comment {
+      width: 100%;
+
+      .user-pfp {
+        > img {
+          max-height: 50px;
+          border-radius: 50%;
+        }
+      }
+      .user-comment {
+        display: flex;
+        flex-direction: column;
+        transform: translateX(0.45rem);
+      }
+
+      span {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        &:hover {
+          color: crimson;
+          transform: scale(1.2) !important;
+        }
+      }
+    }
+  }
 }
 
 @import "./media";
