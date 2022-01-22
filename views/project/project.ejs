@@ -3,6 +3,7 @@
 <body>
 <%- include('../includes/nav.ejs') %>
 <div id="project-section">
+
     <div class="container p-1">
         <div class="row">
             <div class="project-user col s12 l3">
@@ -58,11 +59,17 @@
                    </div>
                 </div>
                 <div class="comment-section p-1">
+
+                    <% if (isAuthenticated) { %>
+                        <div id='session-user' style="display: none;" data-name='<%= sessionUser.userName %>' data-avatar="<%= sessionUser.avatar %>"></div>
+                    <% } %>
+
                     <div class="comments-show-div">
-                        <a href="#" class="btn deep-purple waves-effect lighten-1 poppins-text comments-toggle-btn" style="display:inline-flex;align-items: center;"> toggle &ThinSpace;<i class="material-icons">comment</i></a>
+                        <a href="#" class="btn deep-purple waves-effect lighten-1 poppins-text comments-toggle-btn" style="display:inline-flex;align-items: center;"><i class="material-icons">comment</i>&ThinSpace;
+                            (<%= project.comments.length %>)</a>
                     </div>
 
-                    <div class="comments-box my-1" id="comments-box">
+                    <div class="comments-box my-1" id="comments-box" style="display: none;">
 
                         <% if (isAuthenticated) { %>
                             <div class="user-comment-div row" id="add-comment-div">
@@ -81,7 +88,11 @@
                                     <%= comment.text %>
                                 </div>
                                 </div>
-                                <span class="col remove-comment s1" style="transform: translateY(10px);"><i class="material-icons remove-comment">delete</i></span>
+                                <% if (isAuthenticated) { %>
+                                    <% if (comment.user._id.toString() == sessionUser._id.toString() ) { %>
+                                        <span class="col remove-comment s1" style="transform: translateY(10px);"><i class="material-icons remove-comment">delete</i></span>
+                                    <% } %>
+                                <% } %>
                             </div>
                         <% }); %>
             
@@ -112,12 +123,15 @@
             const comment = document.createElement('div');
             comment.classList.add('comment','row');   
             comment.setAttribute('data-id',uid); 
+
+            const userName = document.getElementById('session-user').getAttribute('data-name');
+            const avatar = document.getElementById('session-user').getAttribute('data-avatar');
             
             //TODO: handle not authenticatedState edge case
             comment.innerHTML = 
-            ` <div class="user-pfp col s2 l1"><img class="z-depth-1" src="<%= sessionUser.avatar %>" alt="#"></div>
+            ` <div class="user-pfp col s2 l1"><img class="z-depth-1" src="${avatar}" alt="#"></div>
                     <div class="user-comment col s9 l10" >
-                        <a href="#user-profile-link poppins-text" class="user-name"><%= sessionUser.userName %></a>
+                        <a href="#user-profile-link poppins-text" class="user-name">${userName}</a>
                         <div class="user-comment" style="font: Roboto;font-size: 1.13rem;">
                             ${e.previousElementSibling.firstElementChild.value.trim()}
                     </div>
