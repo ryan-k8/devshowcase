@@ -109,7 +109,12 @@ exports.getProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
 
-    const project = await Project.findById(projectId).populate("user");
+    const project = await Project.findById(projectId)
+      .populate("user")
+      .populate({
+        path: "comments",
+        populate: { path: "user" },
+      });
 
     res.render("project/project", {
       pageTitle: typeof project == typeof null ? "Project" : project.name,
@@ -263,17 +268,18 @@ exports.postDeleteProject = async (req, res, next) => {
 exports.postAddComment = async (req, res, next) => {
   const { projectId } = req.params;
   const { comment } = req.body;
-  console.log(comment);
+
+  console.log(req.body, req.headers);
   const { user: sessionUser } = req.session;
 
   try {
     const project = await Project.findById(projectId);
-    await project.addComment({
+    const { _id: commentId } = await project.addComment({
       userId: sessionUser._id.toString(),
       comment: comment,
     });
 
-    res.status(201).json({ message: "CREATED" });
+    res.status(201).json({ message: "CREATED", uid: commentId.toString() });
   } catch (err) {
     console.log(err);
   }

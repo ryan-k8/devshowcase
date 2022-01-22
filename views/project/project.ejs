@@ -36,8 +36,6 @@
                     <% project.images.forEach((img, index) => {  %>
                     <a class="carousel-item" href="#<%= index %>"><img height="100%" src="<%= img.url %>"></a>
                     <% }); %>
-<!--                     
-                    <a class="carousel-item"  href="#one!"><img height="100%" src="https://wallpapersmug.com/download/1024x768/5b8d62/enjoy-rain-anime-girl.jpg"></a> -->
                   </div>
                 <div class="project-detailed-div p-1">
                     <h5 class='text-header center-align poppins-text' style="margin-top: 0rem;"><%= project.name %>
@@ -59,34 +57,112 @@
                        <% }); %>
                    </div>
                 </div>
-                <!-- <div class="comment-section p-1">
+                <div class="comment-section p-1">
                     <div class="comments-show-div">
-                        <a href="#showcomments" class="btn deep-purple waves-effect lighten-1 poppins-text comments-show-btn" style="display:inline-flex;center; align-items: center;"> show &ThinSpace;<i class="material-icons">comment</i></a>
+                        <a href="#" class="btn deep-purple waves-effect lighten-1 poppins-text comments-toggle-btn" style="display:inline-flex;align-items: center;"> toggle &ThinSpace;<i class="material-icons">comment</i></a>
                     </div>
 
-                    <div class="comments-box my-1">
-                        <div class="user-comment-div row">
-                            <div class="user-pfp col s2 l1"><img class="z-depth-1" src="https://avatars.githubusercontent.com/u/75524300?v=4" alt="#"></div>
-                            <div class="user-comment col s9 l10"><textarea name="textarea" class="materialize-textarea" id="" cols="30" rows="10"></textarea></div>
-                             <span class="col s1" style="transform: translateY(10px);"><i class="material-icons">send</i></span>
-                        </div>
-             
-                        <div class="comment row">
-                            <div class="user-pfp col s2 l1"><img class="z-depth-1" src="https://cdn.discordapp.com/avatars/323019821803372544/74589599ca9fa9f73fb57c0983874484.jpg?size=1024" alt="#"></div>
-                            <div class="user-comment col s9 l10" >
-                            <a href="#user-profile-link poppins-text" class="user-name"> 頭のないムカデ</a>
-                            <div class="user-comment" style="font: Roboto;font-size: 1.13rem;">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur veritatis dolorum impedit exercitationem nihil mollitia assumenda ea alias laboriosam, provident quod animi maxime laborum ad! Quod rem vel aliquid ducimus?
+                    <div class="comments-box my-1" id="comments-box">
+
+                        <% if (isAuthenticated) { %>
+                            <div class="user-comment-div row" id="add-comment-div">
+                                <div class="user-pfp col s2 l1"><img class="z-depth-1" src="<%= sessionUser.avatar %>" alt="#"></div>
+                                <div class="user-comment col s9 l10"><textarea name="textarea" class="materialize-textarea" id="" cols="30" rows="10"></textarea></div>
+                                <span class="col s1" style="transform: translateY(10px);"><i class="material-icons add-comment">send</i></span>
                             </div>
+                        <% } %>
+
+                        <% project.comments.forEach((comment) => { %>
+                            <div class="comment row" data-id="<%= comment._id.toString() %>">
+                                <div class="user-pfp col s2 l1"><img class="z-depth-1" src="<%= comment.user.avatar %>" alt="#"></div>
+                                <div class="user-comment col s9 l10" >
+                                <a href="#user-profile-link poppins-text" class="user-name"><%= comment.user.userName %></a>
+                                <div class="user-comment" style="font: Roboto;font-size: 1.13rem;">
+                                    <%= comment.text %>
+                                </div>
+                                </div>
+                                <span class="col remove-comment s1" style="transform: translateY(10px);"><i class="material-icons remove-comment">delete</i></span>
                             </div>
-                            <span class="col s1" style="transform: translateY(10px);"><i class="material-icons">delete</i></span>
-                        </div>
+                        <% }); %>
+            
                     </div>  
-                </div> -->
+                </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    async function addComment(e) {
+
+        try {
+            if (e.previousElementSibling.firstElementChild.value.trim() == '') {
+                throw new Error('comment cannot be empty');
+            }
+    
+            
+            const response = await fetch('http://localhost:3000/project/<%= project._id.toString() %>/add-comment',{
+                method:'POST',
+                body: new URLSearchParams({
+                    'comment': e.previousElementSibling.firstElementChild.value.trim(),
+                }),
+            });
+            
+            const {uid}= await response.json();
+
+            const comment = document.createElement('div');
+            comment.classList.add('comment','row');   
+            comment.setAttribute('data-id',uid); 
+            
+            //TODO: handle not authenticatedState edge case
+            comment.innerHTML = 
+            ` <div class="user-pfp col s2 l1"><img class="z-depth-1" src="<%= sessionUser.avatar %>" alt="#"></div>
+                    <div class="user-comment col s9 l10" >
+                        <a href="#user-profile-link poppins-text" class="user-name"><%= sessionUser.userName %></a>
+                        <div class="user-comment" style="font: Roboto;font-size: 1.13rem;">
+                            ${e.previousElementSibling.firstElementChild.value.trim()}
+                    </div>
+                 </div>
+            <span class="col delete-comment s1" style="transform: translateY(10px);"><i class="material-icons remove-comment">delete</i></span>
+            `;
+    
+            e.parentElement.parentElement.insertBefore(comment, e.parentElement.nextElementSibling);
+            e.previousElementSibling.firstElementChild.value = null;
+
+        } catch(err) {
+            M.toast({html:`<p class='poppins-text'>${err.message}</p>`})
+
+        }
+
+    }
+
+    async function removeComment(e) {
+
+        const commentId = e.parentElement.getAttribute('data-id');  
+
+        await fetch(`http://localhost:3000/project/<%= project._id.toString() %>/delete-comment/${commentId}`,{
+            method:'POST'
+        });
+        e.parentElement.remove();
+
+    }
+
+    document.getElementById('comments-box').addEventListener('click',async (e) => {
+        if (e.target.classList.contains('add-comment')) {
+        addComment(e.target.parentElement);
+
+        } else if (e.target.classList.contains('remove-comment')) {
+            removeComment(e.target.parentElement);
+        }
+    });
+
+    document.querySelector('.comments-toggle-btn').addEventListener('click',(e) => {
+        e.preventDefault();
+        const commentBox = document.getElementById('comments-box');
+        const state = commentBox.style.display;
+        commentBox.style.display = state == 'none' ? 'block': 'none';
+    });
+
+</script>
 
 <%-include ('../includes/end.ejs') %>
 

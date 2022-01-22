@@ -54,10 +54,12 @@ const projectSchema = mongoose.Schema({
   comments: [commentSchema],
 });
 
-projectSchema.methods.addComment = function ({ userId, comment }) {
+projectSchema.methods.addComment = async function ({ userId, comment }) {
   this.comments = [...this.comments, { user: userId, text: comment }];
 
-  return this.save();
+  await this.save();
+
+  return this.comments[this.comments.length - 1];
 };
 
 projectSchema.methods.removeComment = function (commentId) {
