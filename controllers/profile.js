@@ -9,7 +9,10 @@ exports.getProfile = async (req, res, next) => {
   const { userId } = req.params;
 
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate({
+      path: "profileData.projects",
+      populate: { path: "projectId" },
+    });
 
     if (!user) {
       res.render("error", {
@@ -17,7 +20,6 @@ exports.getProfile = async (req, res, next) => {
         statusCode: 404,
       });
     }
-    console.log(user);
     res.render("profile/profile", {
       pageTitle: "Profile",
       isAuthenticated: req.session.isLoggedIn,
