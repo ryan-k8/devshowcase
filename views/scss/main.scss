@@ -298,6 +298,7 @@
   }
 
   .comment-section {
+    overflow-x: hidden;
     ::-webkit-scrollbar {
       width: 8px;
       height: 5px;
@@ -376,6 +377,11 @@
         display: flex;
         flex-direction: column;
         transform: translateX(0.45rem);
+
+        p {
+          word-break: break-all;
+          white-space: normal;
+        }
       }
 
       span {

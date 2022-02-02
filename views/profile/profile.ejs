@@ -64,24 +64,27 @@
                        </h5>
                        <div class="user-recent-projects">
                            <div class="row">
-                               <% if (userProfile.profileData.projects.length >= 1) { %> 
-                                <!-- <div class="col project s12 m6 l6 xl4">
+                               <% if (userProfile.profileData.projects.length >= 1) { %>
+                                <% userProfile.profileData.projects.forEach( project => { %> 
+                              <div class="col project s12 m6 l6 xl4"> 
                                     <div class="card">
                                         <div class="card-image waves-effect waves-block waves-light">
-                                          <img class="activator" src="/toka.png">
+                                          <img class="activator" src="<%= project.projectId.images[0].url %>">
                                         </div>
                                         <div class="card-content">
-                                          <span class="card-title activator grey-text text-darken-4">Toka<i class="material-icons right">more_vert</i></span>
-                                          <p><a href="#">View</a></p>
+                                          <span class="card-title activator grey-text text-darken-4">
+                                              <%= project.projectId.name %><i class="material-icons right">more_vert</i>
+                                          </span>
+                                          <p><a href="/project/<%= project.projectId._id.toString() %>">View</a></p>
                                         </div>
                                         <div class="card-reveal">
-                                          <span class="card-title grey-text text-darken-4">Toka<i class="material-icons right">close</i></span>
-                                          <p>
-                                            🌸 vanilla js app for anime based on state pattern and mvc design. CI/CD with Netlify. up for hacktoberfest2021</p>
+                        <span class="card-title grey-text text-darken-4"><%= project.projectId.name %><i class="material-icons right">close</i></span>
+                                          <p><%= project.projectId.description %></p>
                                         </div>
                                       </div>   
-                                   </div>
-                                 -->
+                                   </div>                 
+
+                                <% }); %>
                                 <% } %> 
                            </div>
                        </div>
