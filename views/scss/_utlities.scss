@@ -108,3 +108,12 @@ body {
   color: #fff;
   width: auto;
 }
+
+.clr {
+  &__negative-vote {
+    color: orangered !important;
+  }
+  &__positive-vote {
+    color: royalblue !important;
+  }
+}

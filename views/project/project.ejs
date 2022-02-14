@@ -38,6 +38,15 @@
                     <a class="carousel-item" href="#<%= index %>"><img height="100%" src="<%= img.url %>"></a>
                     <% }); %>
                   </div>
+                <div class="project-vote-div p-1 poppins-text">
+                   50
+                   <a href="#upvote" class="upvote-btn">
+                       <i class="material-icons">arrow_upward</i>
+                   </a> 
+                  <a href="#downvote" class="downvote-btn">
+                       <i class="material-icons">arrow_downward</i>
+                   </a>
+                </div>
                 <div class="project-detailed-div p-1">
                     <h5 class='text-header center-align poppins-text' style="margin-top: 0rem;"><%= project.name %>
                    </h5>

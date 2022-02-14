@@ -8,7 +8,7 @@ const upvoteSchema = mongoose.Schema({
   },
 });
 
-const downvoteSchema = moongoose.Schema({
+const downvoteSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "user",
@@ -70,8 +70,8 @@ const projectSchema = mongoose.Schema({
   comments: [commentSchema],
 
   votes: {
-    upvotes: [upvoteSchema],
-    downvotes: [downvoteSchema],
+    upVotes: [upvoteSchema],
+    downVotes: [downvoteSchema],
   },
 });
 
@@ -92,7 +92,9 @@ projectSchema.methods.removeComment = function (commentId) {
 };
 
 projectSchema.methods.voteProject = async function ({ type, userId }) {
-  const alreadyUpvoted = this.upvotes.find((upvote) => upvote.user.toString() == userId.toString());
+  const alreadyUpvoted = this.upvotes.find(
+    (upvote) => upvote.user.toString() == userId.toString()
+  );
   const alreadyDownvoted = this.downvotes.find(
     (downvote) => downvote.user.toString() == userId.toString()
   );
@@ -107,7 +109,7 @@ projectSchema.methods.voteProject = async function ({ type, userId }) {
     });
   } else {
     if (!alreadyDownvoted) {
-      return [new Error("you have alreadyupvoted"), false];
+      return [new Error("you have already downvoted"), false];
     }
 
     this.downvotes = [...this.downvotes, { user: userId }];
