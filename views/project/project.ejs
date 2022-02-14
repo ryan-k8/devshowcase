@@ -102,7 +102,39 @@
         </div>
     </div>
 </div>
-<script>
+ <script>
+    async function voteProject(e) {
+        try {
+            const voteType = e.target.getAttribute('data-type');
+
+            if(e.target.classList.contains('already-voted')) {
+                throw new Error('you have already upvoted/downvoted!');
+            }
+
+            const response = await fetch("http://localhost:3000/project/<%= project._id.toString() %>/vote",{
+                method: 'POST',
+                body: new URLSearchParams({
+                    'type':voteType,
+                }) 
+            })
+
+            if (response.status == 409) {
+                const {message} = await response.json(); 
+                throw Error(message); 
+            }
+
+            if (e.target.classList.contains("upvote-btn")) {
+                e.target.nextElementSibling.classList.remove("aleady-voted");
+            } else {
+                e.target.previousElementSibling.classList.remove("already-voted");
+            }
+
+            e.target.classList.add("already-voted")
+
+        } catch(err) {
+            M.toast({html:`<p class='poppins-text'>${err.message}</p>`});
+        }
+    }    
     async function addComment(e) {
 
         try {

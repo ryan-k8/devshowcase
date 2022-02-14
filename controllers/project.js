@@ -211,9 +211,7 @@ exports.postEditProject = async (req, res, next) => {
     uploadedImages = [];
   }
 
-  const { prevImages: prevImagesMetaData } = JSON.parse(
-    req.headers["x-images-metadata"]
-  );
+  const { prevImages: prevImagesMetaData } = JSON.parse(req.headers["x-images-metadata"]);
 
   console.log(prevImagesMetaData);
 
@@ -223,9 +221,7 @@ exports.postEditProject = async (req, res, next) => {
     project.images.forEach((alreadyPresentImg) => {
       if (!prevImagesMetaData.find((img) => img.url == alreadyPresentImg.url)) {
         cloudinary.uploader.destroy(
-          process.env.CLOUDINARY_FOLDER_NAME +
-            "/" +
-            alreadyPresentImg.cloudinaryId
+          process.env.CLOUDINARY_FOLDER_NAME + "/" + alreadyPresentImg.cloudinaryId
         );
       } else {
         uploadedImages.push(alreadyPresentImg);
@@ -253,9 +249,7 @@ exports.postDeleteProject = async (req, res, next) => {
     const project = await Project.findById(projectId);
 
     project.images.forEach((img) => {
-      cloudinary.uploader.destroy(
-        process.env.CLOUDINARY_FOLDER_NAME + "/" + img.cloudinaryId
-      );
+      cloudinary.uploader.destroy(process.env.CLOUDINARY_FOLDER_NAME + "/" + img.cloudinaryId);
     });
 
     await project.remove();
@@ -269,7 +263,6 @@ exports.postAddComment = async (req, res, next) => {
   const { projectId } = req.params;
   const { comment } = req.body;
 
-  console.log(req.body, req.headers);
   const { user: sessionUser } = req.session;
 
   try {
@@ -293,6 +286,29 @@ exports.postDeleteComment = async (req, res, next) => {
     await project.removeComment(commentId);
 
     res.status(200).json({ message: "DELETED" });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+exports.postVoteProject = async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+    const { user: sessionUser } = req.session;
+    const { type } = req.body;
+
+    const Project = await Project.findById(projectId);
+
+    const [err, done] = await Project.voteProject({
+      type: type,
+      userId: sessionUser._id.toString(),
+    });
+
+    if (err && !done) {
+      res.status(409).json({ message: err.message });
+    }
+
+    res.status(200).json({ message: "done" });
   } catch (err) {
     console.log(err);
   }
