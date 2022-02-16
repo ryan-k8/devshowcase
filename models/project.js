@@ -1,5 +1,21 @@
 const mongoose = require("mongoose");
 
+const upvoteSchema = mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+});
+
+const downvoteSchema = mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+});
+
 const commentSchema = mongoose.Schema({
   text: {
     type: String,
@@ -52,6 +68,10 @@ const projectSchema = mongoose.Schema({
   images: [{ url: String, cloudinaryId: String }],
 
   comments: [commentSchema],
+
+  upvotes: [upvoteSchema],
+
+  downvotes: [downvoteSchema],
 });
 
 projectSchema.methods.addComment = async function ({ userId, comment }) {
@@ -69,6 +89,48 @@ projectSchema.methods.removeComment = function (commentId) {
   this.comments = updatedComments;
   return this.save();
 };
+
+projectSchema.methods.voteProject = async function ({ type, userId }) {
+  const alreadyUpvoted = this.upvotes.find(
+    (upvote) => upvote.user.toString() == userId
+  );
+  const alreadyDownvoted = this.downvotes.find(
+    (downvote) => downvote.user.toString() == userId
+  );
+
+  if (type == "upvote") {
+    if (alreadyUpvoted) {
+      this.upvotes = this.upvotes.filter(
+        (upvote) => upvote.user.toString() != userId
+      );
+    } else {
+      this.upvotes = [...this.upvotes, { user: userId }];
+      this.downvotes = this.downvotes.filter((downvote) => {
+        return downvote.user.toString() != userId.toString();
+      });
+    }
+  } else {
+    if (alreadyDownvoted) {
+      this.downvotes = this.downvotes.filter(
+        (downvote) => downvote.user.toString() != userId
+      );
+    } else {
+      this.downvotes = [...this.downvotes, { user: userId }];
+      this.upvotes = this.upvotes.filter((upvote) => {
+        return upvote.user.toString() != userId.toString();
+      });
+    }
+  }
+
+  await this.save();
+};
+
+projectSchema.virtual("score").get(function () {
+  if (this.upvotes && this.downvotes) {
+    return this.upvotes.length - this.downvotes.length;
+  }
+  return 0;
+});
 
 const Project = mongoose.model("project", projectSchema);
 module.exports = Project;

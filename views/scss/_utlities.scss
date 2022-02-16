@@ -108,3 +108,19 @@ body {
   color: #fff;
   width: auto;
 }
+
+.clr {
+  &__negative-vote {
+    color: royalblue !important;
+  }
+  &__positive-vote {
+    color: orangered !important;
+  }
+  &__0-vote {
+    color: #9e9e9e !important;
+  }
+}
+
+.already-voted {
+  color: #9163e0 !important;
+}

@@ -266,6 +266,27 @@
     }
   }
 
+  .project-vote-div {
+    display: flex;
+    align-items: center;
+    column-gap: 0.25rem;
+    color: #9e9e9e;
+    font-size: 1.4rem;
+    font-weight: bold;
+
+    .material-icons {
+      font-size: 2.25rem;
+      font-weight: 600;
+      color: #9e9e9e;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+      &:hover {
+        transform: scale(1.1) translateY(-0.2rem);
+        color: #9163e0;
+      }
+    }
+  }
+
   .project-detailed-div {
     display: flex;
     flex-direction: column;
