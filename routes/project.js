@@ -62,4 +62,6 @@ router.post(
   projectController.postDeleteComment
 );
 
+router.post("/project/:projectId/vote", projectController.postVoteProject);
+
 module.exports = router;

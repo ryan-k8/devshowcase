@@ -38,14 +38,23 @@
                     <a class="carousel-item" href="#<%= index %>"><img height="100%" src="<%= img.url %>"></a>
                     <% }); %>
                   </div>
-                <div class="project-vote-div p-1 poppins-text">
-                   50
-                   <a href="#upvote" class="upvote-btn">
-                       <i class="material-icons">arrow_upward</i>
-                   </a> 
-                  <a href="#downvote" class="downvote-btn">
-                       <i class="material-icons">arrow_downward</i>
-                   </a>
+            <div class="project-vote-div p-1 poppins-text clr__<%= projectScore < 0  ?  'negative':'positive' %>-vote
+                <%= projectScore == 0 ? 'clr__0-vote':'no' %>">
+                   <% if (projectScore) { %>
+                        <%= projectScore %>
+                   <% } else { %>
+                        0
+                    <% } %>
+                   
+                   <% if (isAuthenticated) { %>
+                     <a href="#upvote" class="upvote-btn" >
+                    <i class="material-icons <%= alreadyUpvoted == true ? 'already-voted' : 'no' %>" data-type="upvote">arrow_upward</i>
+                     </a> 
+                     <a href="#downvote" class="downvote-btn" >
+                       <i class="material-icons <%= alreadyDownvoted == true ? 'already-voted' : 'no' %>" data-type="downvote">arrow_downward</i>
+                     </a>
+                   <% } %>
+                   
                 </div>
                 <div class="project-detailed-div p-1">
                     <h5 class='text-header center-align poppins-text' style="margin-top: 0rem;"><%= project.name %>
@@ -92,7 +101,7 @@
                             <div class="comment row" data-id="<%= comment._id.toString() %>">
                                 <div class="user-pfp col s2 l1"><img class="z-depth-1" src="<%= comment.user.avatar %>" alt="#"></div>
                                 <div class="user-comment col s9 l10" >
-                                <a href="#user-profile-link poppins-text" class="user-name"><%= comment.user.userName %></a>
+                                <a href="/profile/<%= comment.user._id.toString() %>" class="user-name"><%= comment.user.userName %></a>
                                 <div class="user-comment" style="font: Roboto;font-size: 1.13rem;">
                                     <p><%= comment.text %></p>
                                 </div>
@@ -115,10 +124,9 @@
     async function voteProject(e) {
         try {
             const voteType = e.target.getAttribute('data-type');
+            const voteDiv = document.querySelector('.project-vote-div');
 
-            if(e.target.classList.contains('already-voted')) {
-                throw new Error('you have already upvoted/downvoted!');
-            }
+            Loader.init();
 
             const response = await fetch("http://localhost:3000/project/<%= project._id.toString() %>/vote",{
                 method: 'POST',
@@ -126,21 +134,46 @@
                     'type':voteType,
                 }) 
             })
+            let {score} = await response.json();
+            score = parseInt(score);
+             
+            Loader.remove();
 
-            if (response.status == 409) {
-                const {message} = await response.json(); 
-                throw Error(message); 
-            }
-
-            if (e.target.classList.contains("upvote-btn")) {
-                e.target.nextElementSibling.classList.remove("aleady-voted");
+            if(e.target.classList.contains('already-voted')) {
+                e.target.classList.remove("already-voted");
+                
             } else {
-                e.target.previousElementSibling.classList.remove("already-voted");
+
+             if (voteType == 'upvote') {
+                e.target.parentElement.nextElementSibling.firstElementChild.classList.remove('already-voted');
+             } 
+             
+             else {
+                e.target.parentElement.previousElementSibling.firstElementChild.classList.remove("already-voted");
+             }
+
+
+             e.target.classList.add("already-voted");
             }
-
-            e.target.classList.add("already-voted")
-
+           
+             if (score > 0) {
+                voteDiv.classList.remove('clr__0-vote');
+                voteDiv.classList.remove('clr__negative-vote');
+                voteDiv.classList.add('clr__positive-vote');
+             } else if  (score < 0 ) {
+                voteDiv.classList.remove('clr__0-vote');
+                voteDiv.classList.remove('clr__positive-vote');
+                voteDiv.classList.add('clr__negative-vote');
+             } else { 
+                voteDiv.classList.replace('clr__positive-vote','null');
+                voteDiv.classList.replace('clr__negative-vote','null');
+                voteDiv.classList.replace('clr__0-vote','null');
+             }           
+            
+            voteDiv.firstChild.textContent = score;
         } catch(err) {
+            //Loader.remove();
+
             M.toast({html:`<p class='poppins-text'>${err.message}</p>`});
         }
     }    
@@ -168,7 +201,6 @@
             const userName = document.getElementById('session-user').getAttribute('data-name');
             const avatar = document.getElementById('session-user').getAttribute('data-avatar');
             
-            //TODO: handle not authenticatedState edge case
             comment.innerHTML = 
             ` <div class="user-pfp col s2 l1"><img class="z-depth-1" src="${avatar}" alt="#"></div>
                     <div class="user-comment col s9 l10" >
@@ -217,6 +249,12 @@
         commentBox.style.display = state == 'none' ? 'block': 'none';
     });
 
+    document.querySelector('.project-vote-div').addEventListener('click',(e) => {
+        if (!e.target.classList.contains('project-vote-div')) {
+             voteProject(e);
+        }
+ 
+    })
 </script>
 
 <%-include ('../includes/end.ejs') %>

@@ -69,10 +69,9 @@ const projectSchema = mongoose.Schema({
 
   comments: [commentSchema],
 
-  votes: {
-    upVotes: [upvoteSchema],
-    downVotes: [downvoteSchema],
-  },
+  upvotes: [upvoteSchema],
+
+  downvotes: [downvoteSchema],
 });
 
 projectSchema.methods.addComment = async function ({ userId, comment }) {
@@ -93,35 +92,45 @@ projectSchema.methods.removeComment = function (commentId) {
 
 projectSchema.methods.voteProject = async function ({ type, userId }) {
   const alreadyUpvoted = this.upvotes.find(
-    (upvote) => upvote.user.toString() == userId.toString()
+    (upvote) => upvote.user.toString() == userId
   );
   const alreadyDownvoted = this.downvotes.find(
-    (downvote) => downvote.user.toString() == userId.toString()
+    (downvote) => downvote.user.toString() == userId
   );
 
   if (type == "upvote") {
-    if (!alreadyUpvoted) {
-      return [new Error("you have alreadyupvoted"), false];
+    if (alreadyUpvoted) {
+      this.upvotes = this.upvotes.filter(
+        (upvote) => upvote.user.toString() != userId
+      );
+    } else {
+      this.upvotes = [...this.upvotes, { user: userId }];
+      this.downvotes = this.downvotes.filter((downvote) => {
+        return downvote.user.toString() != userId.toString();
+      });
     }
-    this.upvotes = [...this.upvotes, { user: userId }];
-    this.downvotes = this.downvotes.filter((downvote) => {
-      return downvote.user.toString() != userId.toString();
-    });
   } else {
-    if (!alreadyDownvoted) {
-      return [new Error("you have already downvoted"), false];
+    if (alreadyDownvoted) {
+      this.downvotes = this.downvotes.filter(
+        (downvote) => downvote.user.toString() != userId
+      );
+    } else {
+      this.downvotes = [...this.downvotes, { user: userId }];
+      this.upvotes = this.upvotes.filter((upvote) => {
+        return upvote.user.toString() != userId.toString();
+      });
     }
-
-    this.downvotes = [...this.downvotes, { user: userId }];
-    this.upvotes = this.upvotes.filter((upvote) => {
-      return upvote.user.toString() != userId.toString();
-    });
   }
 
   await this.save();
-
-  return [null, true];
 };
+
+projectSchema.virtual("score").get(function () {
+  if (this.upvotes && this.downvotes) {
+    return this.upvotes.length - this.downvotes.length;
+  }
+  return 0;
+});
 
 const Project = mongoose.model("project", projectSchema);
 module.exports = Project;

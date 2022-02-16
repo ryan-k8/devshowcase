@@ -108,6 +108,7 @@ exports.getUserProjects = async (req, res, next) => {
 exports.getProject = async (req, res, next) => {
   try {
     const { projectId } = req.params;
+    const sessionUser = req.session.user;
 
     const project = await Project.findById(projectId)
       .populate("user")
@@ -116,12 +117,33 @@ exports.getProject = async (req, res, next) => {
         populate: { path: "user" },
       });
 
+    let alreadyUpvoted = false;
+    let alreadyDownvoted = false;
+    if (sessionUser) {
+      const hasUpvoted = project.upvotes.find(
+        (u) => u.user.toString() == sessionUser._id.toString()
+      );
+      const hasDownvoted = project.downvotes.find(
+        (d) => d.user.toString() == sessionUser._id.toString()
+      );
+      if (hasUpvoted) {
+        alreadyUpvoted = true;
+      }
+
+      if (hasDownvoted) {
+        alreadyDownvoted = true;
+      }
+    }
+
     res.render("project/project", {
-      pageTitle: typeof project == typeof null ? "Project" : project.name,
+      pageTitle: typeof project == typeof undefined ? "Project" : project.name,
       isAuthenticated: req.session.isLoggedIn,
       sessionUser: req.session.user,
       path: "/projects",
       project: project,
+      alreadyUpvoted: alreadyUpvoted,
+      alreadyDownvoted: alreadyDownvoted,
+      projectScore: project.score,
     });
   } catch (err) {
     console.log(err);
@@ -211,7 +233,9 @@ exports.postEditProject = async (req, res, next) => {
     uploadedImages = [];
   }
 
-  const { prevImages: prevImagesMetaData } = JSON.parse(req.headers["x-images-metadata"]);
+  const { prevImages: prevImagesMetaData } = JSON.parse(
+    req.headers["x-images-metadata"]
+  );
 
   console.log(prevImagesMetaData);
 
@@ -221,7 +245,9 @@ exports.postEditProject = async (req, res, next) => {
     project.images.forEach((alreadyPresentImg) => {
       if (!prevImagesMetaData.find((img) => img.url == alreadyPresentImg.url)) {
         cloudinary.uploader.destroy(
-          process.env.CLOUDINARY_FOLDER_NAME + "/" + alreadyPresentImg.cloudinaryId
+          process.env.CLOUDINARY_FOLDER_NAME +
+            "/" +
+            alreadyPresentImg.cloudinaryId
         );
       } else {
         uploadedImages.push(alreadyPresentImg);
@@ -249,7 +275,9 @@ exports.postDeleteProject = async (req, res, next) => {
     const project = await Project.findById(projectId);
 
     project.images.forEach((img) => {
-      cloudinary.uploader.destroy(process.env.CLOUDINARY_FOLDER_NAME + "/" + img.cloudinaryId);
+      cloudinary.uploader.destroy(
+        process.env.CLOUDINARY_FOLDER_NAME + "/" + img.cloudinaryId
+      );
     });
 
     await project.remove();
@@ -297,18 +325,14 @@ exports.postVoteProject = async (req, res, next) => {
     const { user: sessionUser } = req.session;
     const { type } = req.body;
 
-    const Project = await Project.findById(projectId);
+    const project = await Project.findById(projectId);
 
-    const [err, done] = await Project.voteProject({
+    await project.voteProject({
       type: type,
       userId: sessionUser._id.toString(),
     });
 
-    if (err && !done) {
-      res.status(409).json({ message: err.message });
-    }
-
-    res.status(200).json({ message: "done" });
+    res.status(200).json({ message: "done", score: project.score });
   } catch (err) {
     console.log(err);
   }
